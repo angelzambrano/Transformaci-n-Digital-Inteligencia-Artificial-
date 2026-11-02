@@ -1,0 +1,988 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ruta Transformación Digital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  --sena:#39A900; --sena2:#007832; --navy:#00304D; --sena-soft:#E8F5DF;
+  --bg:#F4F7F5; --panel:#FFFFFF; --panel2:#F8FAF9; --ink:#14212B; --muted:#5B6B76; --line:#E1E8E4;
+  --accent:#00304D; --chip:#EEF4F0; --shadow:0 1px 2px rgba(0,48,77,.06),0 6px 20px rgba(0,48,77,.06);
+  --ok:#2E8B16; --bad:#C62828; --warn:#C77700; --link:#007832; --nv:#00304D;
+}
+:root:not([data-theme="light"]){color-scheme:light}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0B1620; --panel:#112230; --panel2:#0E1D29; --ink:#E7EEF2; --muted:#9DB0BC; --line:#1F3546;
+    --accent:#7FD45A; --chip:#173042; --sena-soft:#16331F; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+    --ok:#6BCB45; --bad:#FF6B6B; --warn:#F2B44A; --link:#7FD45A; --nv:#1F6A99; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0B1620; --panel:#112230; --panel2:#0E1D29; --ink:#E7EEF2; --muted:#9DB0BC; --line:#1F3546;
+  --accent:#7FD45A; --chip:#173042; --sena-soft:#16331F; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+  --ok:#6BCB45; --bad:#FF6B6B; --warn:#F2B44A; --link:#7FD45A; --nv:#1F6A99; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Work Sans",Calibri,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:15.5px;line-height:1.55}
+a{color:var(--link);font-weight:500}
+svg{width:1.05em;height:1.05em;vertical-align:-.15em;flex:none}
+svg.inf{width:100%;height:auto}
+button{font-family:inherit}
+.app{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+/* sidebar */
+.side{background:var(--navy);color:#fff;position:sticky;top:0;height:100vh;overflow:auto;padding:18px 14px;display:flex;flex-direction:column;gap:14px}
+.brand{display:flex;gap:12px;align-items:center;padding:4px 6px 14px;border-bottom:1px solid rgba(255,255,255,.12)}
+.brand img{width:46px;height:46px;border-radius:10px;flex:none}
+.brand b{display:block;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:#A9E58A}
+.brand span{font-size:13px;opacity:.85;line-height:1.3;display:block}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:0;color:#D6E3EA;padding:9px 10px;border-radius:9px;font-size:14px;cursor:pointer}
+.nav button:hover{background:rgba(255,255,255,.07);color:#fff}
+.nav button.on{background:var(--sena);color:#fff;font-weight:600}
+.nav button .dot{margin-left:auto;width:7px;height:7px;border-radius:50%;background:transparent}
+.nav button.seen .dot{background:#A9E58A}
+.nav button.on .dot{background:#fff}
+.nav svg{width:18px;height:18px;flex:none}
+.side .foot{margin-top:auto;font-size:12px;opacity:.7;line-height:1.4;padding:8px 6px}
+/* main */
+.main{min-width:0}
+.top{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;padding:12px 28px}
+.top h1{font-size:17px;margin:0;font-weight:700;letter-spacing:-.01em;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top h1 small{display:block;font-weight:500;color:var(--muted);font-size:12.5px}
+.prog{width:160px;flex:none}
+.prog .bar{height:7px;background:var(--line);border-radius:9px;overflow:hidden}
+.prog .bar i{display:block;height:100%;background:var(--sena);width:0;transition:width .4s}
+.prog small{font-size:11.5px;color:var(--muted)}
+.tog{display:flex;gap:6px;flex:none}
+.tog button{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:9px;padding:7px 10px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px}
+.tog button:hover{border-color:var(--sena)}
+.tog svg{width:16px;height:16px}
+.content{padding:26px 28px 60px;max-width:1240px}
+section.pane{display:none;animation:fade .35s ease}
+section.pane.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+h2.sec{font-size:26px;margin:0 0 4px;letter-spacing:-.02em;font-weight:700}
+p.lead{color:var(--muted);margin:0 0 22px;max-width:820px}
+h3{font-size:18px;margin:0 0 8px;font-weight:700}
+h4{font-size:15px;margin:14px 0 6px;font-weight:700}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:var(--shadow)}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.mt{margin-top:16px}.mt2{margin-top:26px}
+.hero{background:linear-gradient(120deg,var(--navy) 0%,#00476F 55%,var(--sena2) 100%);color:#fff;border-radius:20px;padding:28px;display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center;overflow:hidden;position:relative}
+.hero h2{font-size:30px;margin:4px 0 8px;letter-spacing:-.02em;line-height:1.15}
+.hero p{margin:0;opacity:.9;max-width:640px}
+.hero .tag{display:inline-block;background:var(--sena);padding:4px 10px;border-radius:99px;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.hero svg.av{width:150px;height:150px}
+.kpi{display:flex;gap:14px;align-items:center}
+.kpi .ic{width:46px;height:46px;border-radius:12px;background:var(--sena-soft);color:var(--sena2);display:grid;place-items:center;flex:none}
+:root[data-theme="dark"] .kpi .ic{color:#7FD45A}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .kpi .ic{color:#7FD45A}}
+.kpi .ic svg{width:24px;height:24px}
+.kpi b{font-size:24px;display:block;line-height:1.1}
+.kpi span{font-size:13px;color:var(--muted)}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--chip);border-radius:99px;padding:4px 11px;font-size:12.5px;font-weight:600;color:var(--ink)}
+.chip.g{background:var(--sena);color:#fff}
+.chip.n{background:var(--navy);color:#fff}
+.list{margin:0;padding-left:20px}.list li{margin:4px 0}
+/* subtopic */
+.sub{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:18px;align-items:start}
+.sub .num{font-size:12px;font-weight:700;color:var(--sena);letter-spacing:.08em;text-transform:uppercase}
+.ex{border-left:4px solid var(--sena);background:var(--panel2);border-radius:0 12px 12px 0;padding:12px 14px;margin-top:12px;font-size:14.5px}
+.ex b{color:var(--sena2)}
+:root[data-theme="dark"] .ex b{color:#7FD45A}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .ex b{color:#7FD45A}}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.tabs button{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:99px;padding:7px 14px;font-weight:600;font-size:13.5px;cursor:pointer}
+.tabs button.on{background:var(--nv);border-color:var(--nv);color:#fff}
+/* infographics */
+.info{background:var(--panel2);border:1px dashed var(--line);border-radius:14px;padding:14px}
+.info .cap{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px}
+.flow .st{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center;position:relative}
+.flow .st b{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--sena);color:#fff;margin:0 auto 6px;font-size:14px}
+.flow .st:nth-child(even) b{background:var(--navy)}
+.flow .st span{font-size:13px;font-weight:600;display:block;line-height:1.3}
+.flow .st small{font-size:12px;color:var(--muted);display:block;margin-top:3px;line-height:1.3}
+.igrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.igrid div{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px}
+.igrid b{font-size:22px;color:var(--sena);display:block;line-height:1}
+.igrid span{font-weight:700;font-size:13.5px;display:block;margin-top:4px}
+.igrid small{font-size:12px;color:var(--muted);line-height:1.3;display:block}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cmp>div{border-radius:12px;padding:12px;background:var(--panel);border:1px solid var(--line)}
+.cmp>div:first-child{border-top:4px solid var(--navy)}.cmp>div:last-child{border-top:4px solid var(--sena)}
+.cmp ul{margin:6px 0 0;padding-left:18px;font-size:13.5px}
+svg.inf{width:100%;height:auto;display:block}
+svg.inf text{font-family:"Work Sans",sans-serif}
+/* avatar tip */
+.tip{display:flex;gap:12px;align-items:flex-start;margin-top:14px}
+.tip svg{width:54px;height:54px;flex:none}
+.tip .bub{background:var(--sena-soft);border-radius:4px 14px 14px 14px;padding:10px 13px;font-size:14px}
+.tip .bub b{display:block;font-size:12px;color:var(--sena2);letter-spacing:.04em}
+:root[data-theme="dark"] .tip .bub b{color:#7FD45A}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .tip .bub b{color:#7FD45A}}
+/* tables */
+.tw{overflow:auto;border:1px solid var(--line);border-radius:14px}
+table{border-collapse:collapse;width:100%;font-size:14px;background:var(--panel)}
+th{background:var(--navy);color:#fff;text-align:left;padding:10px 12px;font-weight:600;font-size:13px;white-space:nowrap}
+td{padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
+tr:nth-child(even) td{background:var(--panel2)}
+/* forms */
+label.f{display:block;font-size:13px;font-weight:600;margin:10px 0 4px}
+input[type=text],textarea,select{width:100%;font-family:inherit;font-size:14.5px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);border-radius:10px;padding:9px 11px}
+textarea{min-height:90px;resize:vertical}
+input:focus,textarea:focus,select:focus{outline:2px solid var(--sena);border-color:transparent}
+.btn{border:0;background:var(--sena);color:#fff;font-weight:700;border-radius:10px;padding:9px 16px;cursor:pointer;font-size:14px;display:inline-flex;gap:7px;align-items:center}
+.btn.alt{background:var(--nv)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn:hover{filter:brightness(1.07)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.meter{height:12px;background:var(--line);border-radius:9px;overflow:hidden}
+.meter i{display:block;height:100%;transition:width .35s,background .35s}
+.out{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px;font-size:14px;white-space:pre-wrap;min-height:60px}
+.okc{color:var(--ok);font-weight:700}.badc{color:var(--bad);font-weight:700}.warnc{color:var(--warn);font-weight:700}
+.bars .b{display:grid;grid-template-columns:110px 1fr 46px;gap:8px;align-items:center;font-size:13px;margin:5px 0}
+.bars .b div{height:10px;background:var(--line);border-radius:9px;overflow:hidden}
+.bars .b i{display:block;height:100%;background:var(--sena)}
+.opt{display:block;border:1px solid var(--line);border-radius:10px;padding:9px 12px;margin:6px 0;cursor:pointer;background:var(--panel)}
+.opt:hover{border-color:var(--sena)}
+.opt.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 12%,var(--panel))}
+.opt.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 10%,var(--panel))}
+.fb{font-size:13.5px;margin-top:6px}
+.vid{display:block;text-decoration:none;color:inherit;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--panel);box-shadow:var(--shadow);transition:transform .2s}
+.vid:hover{transform:translateY(-3px)}
+.vid .th{position:relative;aspect-ratio:16/9;background:linear-gradient(135deg,var(--navy),var(--sena2));display:grid;place-items:center;color:#fff}
+.vid .th img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.vid .th .pl{position:relative;width:54px;height:54px;border-radius:50%;background:rgba(0,0,0,.6);display:grid;place-items:center}
+.vid .th .pl svg{width:24px;height:24px;margin-left:3px}
+.vid .th .lg{position:absolute;top:8px;left:8px;background:var(--sena);color:#fff;font-size:11px;font-weight:700;padding:3px 8px;border-radius:99px}
+.vid .bd{padding:10px 12px}
+.vid .bd b{font-size:14px;display:block;line-height:1.3}
+.vid .bd small{color:var(--muted);font-size:12.5px}
+.step{display:grid;grid-template-columns:auto 1fr;gap:14px;padding:14px 0;border-top:1px solid var(--line)}
+.step:first-child{border-top:0}
+.step .n{width:40px;height:40px;border-radius:12px;background:var(--nv);color:#fff;display:grid;place-items:center;font-weight:800}
+.step.done .n{background:var(--sena)}
+.step .tm{font-size:12px;font-weight:700;color:var(--sena2);text-transform:uppercase;letter-spacing:.05em}
+:root[data-theme="dark"] .step .tm{color:#7FD45A}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .step .tm{color:#7FD45A}}
+.step ul{margin:6px 0 0;padding-left:18px;font-size:14px}
+.timeline{display:flex;height:16px;border-radius:9px;overflow:hidden;margin:10px 0 4px}
+.timeline i{display:block;height:100%}
+.gl{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.gl div{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px}
+.gl b{color:var(--sena2)}
+:root[data-theme="dark"] .gl b{color:#7FD45A}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .gl b{color:#7FD45A}}
+.gl p{margin:4px 0 0;font-size:13.5px;color:var(--muted)}
+.res{display:flex;gap:12px;align-items:flex-start}
+.res .ic{width:38px;height:38px;border-radius:10px;background:var(--nv);color:#fff;display:grid;place-items:center;flex:none}
+.res .ic svg{width:20px;height:20px}
+code{background:var(--chip);padding:1px 6px;border-radius:6px;font-size:.88em;font-family:Consolas,monospace}
+mark{background:#FFE58F;color:#000;border-radius:4px;padding:0 3px}
+.score{font-size:40px;font-weight:800;color:var(--sena)}
+.small{font-size:13px;color:var(--muted)}
+.hide{display:none!important}
+@media (max-width:980px){
+  .app{grid-template-columns:1fr}
+  .side{position:static;height:auto;flex-direction:column}
+  .nav{flex-direction:row;overflow:auto;gap:4px;padding-bottom:4px}
+  .nav button{white-space:nowrap;width:auto}
+  .side .foot{display:none}
+  .g3,.g4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .sub{grid-template-columns:1fr}
+  .hero{grid-template-columns:1fr}.hero svg.av{display:none}
+}
+@media (max-width:620px){
+  .content{padding:18px 16px 50px}.top{padding:10px 16px;flex-wrap:wrap}
+  .prog{order:3;width:100%}
+  .g2,.g3,.g4,.cmp{grid-template-columns:1fr}
+  .hero h2{font-size:24px}
+}
+
+/* extras ruta */
+.simple{display:flex;gap:12px;align-items:flex-start;background:var(--sena-soft);border-radius:14px;padding:14px 16px;margin:14px 0}
+.simple .ic{width:36px;height:36px;border-radius:10px;background:var(--sena);color:#fff;display:grid;place-items:center;flex:none}
+.simple>div>b:first-child{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--sena2)}
+:root[data-theme="dark"] .simple>div>b:first-child{color:#7FD45A}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .simple>div>b:first-child{color:#7FD45A}}
+.prompt{position:relative;background:var(--panel2);border:1px solid var(--line);border-left:4px solid var(--nv);border-radius:0 12px 12px 0;padding:12px 14px 12px;font-size:14px;margin:8px 0}
+.prompt .cp{position:absolute;top:8px;right:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:3px 9px;font-size:12px;font-weight:600;cursor:pointer}
+.prompt .cp:hover{border-color:var(--sena)}
+.prompt p{margin:0;padding-right:70px}
+.prompt small{display:block;font-weight:700;color:var(--muted);font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;margin-bottom:4px}
+.day{display:flex;gap:14px;align-items:center}
+.day .d{width:54px;height:54px;border-radius:14px;background:var(--sena);color:#fff;display:grid;place-items:center;font-weight:800;font-size:13px;line-height:1.05;text-align:center;flex:none}
+.day:nth-child(even) .d{background:var(--navy)}
+.pyr{display:grid;gap:6px;justify-items:center}
+.pyr div{color:#fff;border-radius:10px;padding:9px 12px;text-align:center;font-size:13.5px}
+.pyr div b{display:block;font-size:15px}
+.pill{display:inline-block;background:var(--chip);border-radius:99px;padding:2px 10px;font-size:12px;font-weight:700;margin:2px 4px 2px 0}
+.next{display:flex;justify-content:space-between;gap:10px;margin-top:26px;flex-wrap:wrap}
+.agenda .it{display:grid;grid-template-columns:96px 1fr;gap:12px;padding:9px 0;border-top:1px solid var(--line);font-size:14px}
+.agenda .it:first-child{border-top:0}
+.agenda .it b.t{color:var(--sena2);font-size:13px}
+:root[data-theme="dark"] .agenda .it b.t{color:#7FD45A}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .agenda .it b.t{color:#7FD45A}}
+.agenda .it.pause{opacity:.7}
+code{overflow-wrap:anywhere}
+input[type=number]{font-family:inherit;font-size:14px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);border-radius:8px;padding:5px 8px}
+input[type=range]{accent-color:var(--sena)}
+.info svg.inf{max-width:620px;margin:0 auto}
+.big{font-size:20px;font-weight:700;line-height:1.35;margin:0}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand"><img src="data:image/png;base64,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" alt="SENA"><div><b>Semana de formación</b><span>Ruta de la Transformación Digital</span></div></div>
+    <nav class="nav" id="nav"></nav>
+    <div class="foot">EDT Transformación Digital, IA e Innovación Tecnológica<br>Instructor: José Andrés Zambrano · Centro de Diseño y Metrología – SENA</div>
+  </aside>
+  <div class="main">
+    <header class="top">
+      <h1 id="tTitle"></h1>
+      <div class="prog"><div class="bar"><i id="pbar"></i></div><small id="ptxt"></small></div>
+      <div class="tog"><button id="themeBtn" title="Cambiar tema"></button></div>
+    </header>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+<script>
+/* ===== iconos ===== */
+const IC={
+home:'<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>',
+rocket:'<path d="M5 15c-1 1-2 5-2 5s4-1 5-2"/><path d="M9 15l-3-3c2-6 7-9 14-9 0 7-3 12-9 14z"/><circle cx="14.5" cy="9.5" r="1.5"/>',
+gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
+chart:'<path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/>',
+brain:'<path d="M9 4a3 3 0 0 0-3 3 3 3 0 0 0-2 5 3 3 0 0 0 2 5 3 3 0 0 0 6 1V5a3 3 0 0 0-3-1z"/><path d="M15 4a3 3 0 0 1 3 3 3 3 0 0 1 2 5 3 3 0 0 1-2 5 3 3 0 0 1-6 1"/>',
+tool:'<path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/>',
+wand:'<path d="M15 4V2M15 10V8M11 6h2M17 6h2"/><path d="M3 21l12-12"/>',
+book:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5V21h16"/>',
+flag:'<path d="M4 21V4"/><path d="M4 4h13l-2 4 2 4H4"/>',
+bulb:'<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/>',
+users:'<circle cx="9" cy="8" r="3.5"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6"/><path d="M16 4a3.5 3.5 0 0 1 0 7M22 21c0-3-1.5-5-4-5.7"/>',
+target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/>',
+clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+check:'<path d="M20 6L9 17l-5-5"/>',
+shield:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>',
+moon:'<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',
+sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+quiz:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14"/><circle cx="12" cy="17.5" r=".6"/>',
+play:'<path d="M7 4l13 8-13 8z" fill="currentColor"/>'
+};
+const I=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${IC[k]||''}</svg>`;
+/* ===== ayudas de maquetación ===== */
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const S=(t,x,ic='bulb')=>`<div class="simple"><div class="ic">${I(ic)}</div><div><b>${t}</b>${x}</div></div>`;
+const EX=x=>`<div class="ex">${x}</div>`;
+const P=(x,l='Prompt de ejemplo')=>`<div class="prompt"><small>${l}</small><button class="cp" data-copy>Copiar</button><p>${esc(x)}</p></div>`;
+const UL=a=>`<ul class="list">${a.map(x=>`<li>${x}</li>`).join('')}</ul>`;
+const OL=a=>`<ol class="list">${a.map(x=>`<li>${x}</li>`).join('')}</ol>`;
+const TB=(h,r)=>`<div class="tw"><table><thead><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${r.map(f=>`<tr>${f.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+const FLOW=(cap,a)=>`<div class="info mt"><div class="cap">${cap}</div><div class="flow">${a.map((x,i)=>`<div class="st"><b>${i+1}</b><span>${x[0]}</span>${x[1]?`<small>${x[1]}</small>`:''}</div>`).join('')}</div></div>`;
+const IG=(a)=>`<div class="igrid">${a.map(x=>`<div><b>${x[0]}</b><span>${x[1]}</span><small>${x[2]}</small></div>`).join('')}</div>`;
+const CMP=(a,b)=>`<div class="cmp"><div><b>${a[0]}</b>${UL(a[1])}</div><div><b>${b[0]}</b>${UL(b[1])}</div></div>`;
+const C=(x,cls='')=>`<div class="card ${cls}">${x}</div>`;
+const G=(n,a)=>`<div class="grid g${n}">${a.join('')}</div>`;
+const H=(tag,title,text,ic)=>`<div class="hero"><div><span class="tag">${tag}</span><h2>${title}</h2><p>${text}</p></div><svg class="av" viewBox="0 0 24 24" fill="none" stroke="#A9E58A" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">${IC[ic]}</svg></div>`;
+
+/* ===== contenido ===== */
+const DAYS={
+dia1:{tag:'Día 1',title:'¿Qué es la transformación digital?',icon:'rocket',
+ lead:'Entender el cambio: de los datos a la inteligencia artificial, explicado con ejemplos del día a día.',
+ subs:[
+ ['La idea general',`
+  <h3>No es solo comprar computadores</h3>
+  <p>La transformación digital es usar la tecnología para <b>trabajar mejor</b> en toda la organización. No se trata de tener equipos nuevos o subir archivos a la nube: se trata de cambiar la forma de hacer las cosas para servir mejor a las personas.</p>
+  ${S('En palabras simples','Es pasar de “siempre lo hemos hecho así” a “¿cómo lo podemos hacer más fácil, rápido y útil con la tecnología?”.')}
+  <h4>Los 4 pilares</h4>
+  ${G(2,[
+   C(`<div class="kpi"><div class="ic">${I('users')}</div><div><b style="font-size:17px">Personas y liderazgo</b><span>Las personas son el centro. Los líderes animan a aprender y a probar cosas nuevas.</span></div></div>`),
+   C(`<div class="kpi"><div class="ic">${I('gear')}</div><div><b style="font-size:17px">Procesos</b><span>Dejar que la tecnología haga las tareas repetitivas para ganar tiempo.</span></div></div>`),
+   C(`<div class="kpi"><div class="ic">${I('target')}</div><div><b style="font-size:17px">Servicio a las personas</b><span>Conocer mejor a quien atendemos y responderle más rápido.</span></div></div>`),
+   C(`<div class="kpi"><div class="ic">${I('chart')}</div><div><b style="font-size:17px">Decisiones con datos</b><span>Decidir con información real y no solo por intuición.</span></div></div>`)])}
+  <h4 class="mt2">¿Qué ganamos?</h4>
+  ${UL(['<b>Eficiencia:</b> menos tiempo y menos costos gracias a la automatización.','<b>Agilidad:</b> capacidad de adaptarnos rápido a los cambios.','<b>Nuevas formas de servir:</b> trámites en línea, servicios digitales, atención 24/7.'])}`],
+ ['Del dato a la inteligencia',`
+  <h3>La pirámide del conocimiento (DIKW)</h3>
+  <p>Cuatro palabras que solemos confundir, pero que van en escalera: cada una se construye sobre la anterior.</p>
+  <div class="grid g2 mt"><div class="pyr">
+   <div style="background:#39A900;width:40%"><b>Inteligencia</b>decidir y anticiparse</div>
+   <div style="background:#007832;width:60%"><b>Conocimiento</b>entender el porqué</div>
+   <div style="background:#00476F;width:80%"><b>Información</b>dato con contexto</div>
+   <div style="background:#00304D;width:100%"><b>Datos</b>hechos sueltos</div></div>
+  <div>${TB(['Nivel','Ejemplo sencillo'],[
+   ['<b>Dato</b>','El número <code>35</code>. Solo, no dice nada.'],
+   ['<b>Información</b>','“35 ventas en la tienda en línea de Bogotá en la última hora”.'],
+   ['<b>Conocimiento</b>','“Cuando llueve en Bogotá y hay 10 % de descuento, las ventas suben 35 %”.'],
+   ['<b>Inteligencia</b>','Un sistema que, al ver pronóstico de lluvia, lanza solo la campaña de descuento.']])}</div></div>
+  ${S('Para recordar','La transformación digital busca subir esa escalera: no quedarnos acumulando datos, sino convertirlos en buenas decisiones.')}`],
+ ['Big Data',`
+  <h3>¿Qué es el Big Data?</h3>
+  <p>Son cantidades de datos <b>tan grandes, tan variadas y que crecen tan rápido</b> que un Excel o una base de datos normal no alcanzan para manejarlas. Es la “materia prima” que, bien trabajada, se vuelve información y conocimiento.</p>
+  <h4>Las 5 “V”</h4>
+  ${IG([['V','Volumen','Muchísimos datos cada segundo.'],['V','Velocidad','Llegan y hay que procesarlos al instante.'],['V','Variedad','Números, textos, fotos, videos, audios.'],['V','Veracidad','¿Son datos confiables y completos?'],['V','Valor','¿Nos sirven para algo útil?']])}
+  <h4 class="mt2">Dónde lo vemos</h4>
+  ${UL(['<b>Mantenimiento:</b> sensores en máquinas avisan antes de que una pieza falle.','<b>Recomendaciones:</b> Netflix o Spotify te sugieren qué ver o escuchar.','<b>Bancos:</b> detectan en segundos una compra extraña y bloquean la tarjeta.'])}`],
+ ['Inteligencia artificial',`
+  <h3>¿Qué es la IA?</h3>
+  <p>Es lograr que un computador haga cosas que normalmente requieren inteligencia humana: <b>aprender</b>, <b>razonar</b> y <b>corregirse</b>.</p>
+  ${CMP(['IA débil o estrecha (la que usamos hoy)',['Hace una sola tarea muy bien.','Ej.: reconocer voz, filtrar correo basura, un asistente virtual.','No tiene conciencia ni “piensa” por sí sola.']],['IA fuerte o general (todavía teórica)',['Sería tan inteligente como una persona en cualquier tema.','Podría aprender y resolver cualquier problema.','Hoy no existe.']])}
+  <h4 class="mt2">Ejemplos cotidianos</h4>
+  ${UL(['Asistentes de voz del celular.','Recomendaciones en redes sociales y plataformas de video.','El GPS que calcula la ruta según el tráfico.'])}
+  ${C(`<h4 style="margin-top:0">${I('users')} Actividad 1 · 5 minutos</h4><p>En grupos de 3 o 4, piensen en procesos del SENA donde la IA podría ayudar: asignación de cupos en Sofía Plus o Zajuna, control de asistencia, verificación de certificados, revisión de tareas… Dos equipos comparten su idea.</p>`,'mt')}`],
+ ['Machine Learning',`
+  <h3>Máquinas que aprenden con ejemplos</h3>
+  <p>El <b>Machine Learning</b> (aprendizaje automático) es una parte de la IA. En vez de programar cada regla, le mostramos muchos ejemplos al sistema y él aprende los patrones solo.</p>
+  ${FLOW('¿Cómo funciona?',[['Recoger datos','ejemplos del pasado'],['Entrenar','busca patrones'],['Probar','¿qué tanto acierta?'],['Usar','predice casos nuevos']])}
+  <h4 class="mt2">3 formas de aprender</h4>
+  ${TB(['Tipo','Cómo aprende','Ejemplo'],[
+   ['<b>Supervisado</b>','Con ejemplos que ya traen la respuesta correcta.','Facturas marcadas “bien” o “con error” para revisar nuevas.'],
+   ['<b>No supervisado</b>','Busca grupos parecidos sin que nadie le diga la respuesta.','Agrupar aprendices con perfiles similares.'],
+   ['<b>Por refuerzo</b>','Prueba y error: gana “puntos” cuando acierta.','Robot aspiradora que aprende a no chocar.']])}
+  ${C(`<h4 style="margin-top:0">${I('flag')} Actividad 2 · Triatlón de Machine Learning (6 min)</h4><p>Clasifiquen cada caso: <b>A.</b> Robot aspiradora que gana puntos al limpiar sin chocar. <b>B.</b> El SENA agrupa 50.000 aprendices sin etiquetas en 4 perfiles. <b>C.</b> Sistema entrenado con 5.000 facturas marcadas “Aprobada” o “Con error”.</p><button class="btn ghost" data-toggle="r1">Ver respuesta</button><p id="r1" class="hide mt"><b>A = Refuerzo · B = No supervisado · C = Supervisado.</b></p>`,'mt')}
+  <h4 class="mt2">Casos reales</h4>
+  ${UL(['Chatbots que atienden 24/7.','Avisos antes de que una máquina se dañe.','Tiendas que sugieren productos a tu medida.','Rutas de entrega que ahorran tiempo y combustible.'])}`],
+ ['IA generativa',`
+  <h3>IA que crea contenido nuevo</h3>
+  <p>La IA “tradicional” analiza y predice. La <b>IA generativa</b> va más allá: <b>crea</b> textos, imágenes, audio, video o código a partir de lo que le pedimos en lenguaje normal.</p>
+  ${FLOW('¿Cómo opera?',[['Aprende','leyó enormes cantidades de texto e imágenes'],['Entiende','lee tu instrucción (prompt)'],['Genera','arma la respuesta palabra por palabra']])}
+  ${S('En palabras simples','Es como un asistente que escribió y leyó muchísimo: le pides algo con tus palabras y te entrega un primer borrador. Pero puede equivocarse, así que siempre lo revisas tú.')}
+  <h4>Herramientas conocidas</h4>
+  ${G(2,[C('<b>ChatGPT</b> (OpenAI)<p class="small">Conversación, redacción, resúmenes.</p>'),C('<b>Copilot</b> (Microsoft)<p class="small">Integrado en Word, Excel, PowerPoint, Outlook y Teams.</p>'),C('<b>Gemini</b> (Google)<p class="small">Entiende texto, imágenes, audio y video.</p>'),C('<b>Claude</b> (Anthropic)<p class="small">Análisis y documentos extensos.</p>')])}
+  <p class="mt"><a href="https://forms.gle/tpB3XmaJx96mYMUt8" target="_blank" rel="noopener">Cuestionario del primer día →</a></p>`]
+ ],
+ quiz:[
+  ['¿Qué es la transformación digital?',['Comprar computadores nuevos','Usar la tecnología para cambiar y mejorar la forma de trabajar','Subir todos los archivos a la nube'],1,'Es un cambio en la forma de trabajar, no solo en los equipos.'],
+  ['“35 ventas en Bogotá en la última hora” es…',['Un dato','Información','Inteligencia'],1,'Es un dato con contexto: eso es información.'],
+  ['Un sistema entrenado con facturas marcadas como “bien” o “con error” usa aprendizaje…',['Supervisado','No supervisado','Por refuerzo'],0,'Tiene ejemplos con la respuesta correcta.'],
+  ['¿Qué hace diferente a la IA generativa?',['Solo guarda datos','Crea contenido nuevo','No necesita instrucciones'],1,'Genera textos, imágenes, audio o código.']]
+},
+dia2:{tag:'Día 2',title:'Automatizar para trabajar mejor',icon:'gear',
+ lead:'Automatización, mejora de procesos, Copilot y cómo pedirle bien las cosas a la IA.',
+ subs:[
+ ['Ruta del día',`
+  <h3>Cuatro pasos que se conectan</h3>
+  ${FLOW('del problema a la mejora',[['Automatizar','¿qué tarea repetitiva haría un sistema?'],['Optimizar','¿dónde se pierde tiempo?'],['Copilot','¿cómo me ayuda la IA?'],['Prompts','¿cómo se lo pido bien?']])}
+  <h4 class="mt2">Reto integrador del día</h4>
+  <p>Elige un proceso manual sencillo de tu trabajo y:</p>
+  ${OL(['Describe cómo se hace hoy, paso a paso.','Marca dónde hay esperas, errores o trabajo repetido.','Escoge el problema principal.','Propón cómo automatizarlo (con reglas o con IA).','Escribe un prompt para analizar o comunicar la mejora.','Revisa lo que responde la IA y anota qué debe validar una persona.','Define cómo medirás si funcionó.'])}
+  ${S('Idea central','La tecnología acelera el trabajo, pero el valor aparece cuando primero entendemos el proceso y usamos la IA con criterio y responsabilidad.','target')}
+  ${S('Cuida la información','Practica con datos ficticios. No pongas contraseñas, datos personales ni información confidencial en herramientas no autorizadas.','shield')}`],
+ ['Automatización',`
+  <h3>¿Qué es automatizar?</h3>
+  ${S('En palabras simples','Automatizar es pedirle a un sistema que haga, de forma repetida y confiable, lo que antes hacía una persona a mano.')}
+  ${TB(['Antes (a mano)','Ahora (automático)'],[
+   ['El instructor llama lista en papel.','Un código QR registra la asistencia al instante.'],
+   ['Alguien envía un correo de confirmación a cada comprador.','El sistema lo envía solo después de la compra.'],
+   ['Se calculan horas y salarios en Excel.','El software calcula y paga la nómina.'],
+   ['Un operario aprieta tornillos uno a uno.','Un brazo robótico ensambla las piezas.']])}
+  <h4 class="mt2">Dos tipos de automatización</h4>
+  ${CMP(['Con reglas fijas (tradicional)',['Sigue instrucciones exactas.','No aprende: si algo cambia, hay que reprogramarla.','Ej.: semáforo, macro de Excel.']],['Con inteligencia artificial',['Aprende de los datos y mejora.','Maneja situaciones nuevas.','Ej.: chatbot que entiende preguntas, detección de fraudes.']])}
+  ${S('Nota','No compiten: se usan juntas. Reglas para lo estable, IA para lo que necesita criterio.')}
+  <h4>Beneficios</h4>
+  ${IG([['↑','Productividad','Más rápido, sin pausas.'],['↓','Errores','El sistema no se cansa.'],['$','Ahorro','Menos horas en tareas repetitivas.'],['∞','Escala','Atiende más sin colapsar.'],['☺','Servicio','Respuestas 24/7.'],['📊','Datos','Información para decidir.']])}
+  ${EX('<b>Ejemplo SENA:</b> enviar automáticamente el certificado digital al terminar el programa. El aprendiz lo recibe en horas, no en semanas.')}
+  ${C(`<h4 style="margin-top:0">${I('users')} Actividad</h4>Piensa en un proceso manual de tu área: ¿qué pasos tiene?, ¿se automatizaría con reglas o con IA?, ¿qué ganaríamos?`,'mt')}`],
+ ['Mejorar un proceso',`
+  <h3>Encontrar el “cuello de botella”</h3>
+  <p>Optimizar es revisar cómo se hace algo para lograr <b>mejor resultado con menos tiempo, esfuerzo o errores</b>.</p>
+  ${S('¿Qué es un cuello de botella?','Es el paso donde todo se atasca, como el cuello de una botella por donde el agua sale despacio. Ejemplo: una sola persona debe aprobar todas las solicitudes.')}
+  <h4>Señales de alerta</h4>
+  ${UL(['Se acumulan tareas antes de un paso.','Muchos preguntan “¿cómo va mi solicitud?”.','Solo una persona puede continuar el proceso.','Se devuelven documentos una y otra vez.'])}
+  ${FLOW('método en 6 pasos',[['Definir','inicio, fin y resultado'],['Dibujar','cómo se hace hoy de verdad'],['Medir','tiempos y errores'],['Ubicar','dónde se acumula'],['Preguntar ¿por qué?','hasta la causa raíz'],['Priorizar','impacto × frecuencia × facilidad']])}
+  <h4 class="mt2">Ejemplo: solicitudes de soporte</h4>
+  <p>Una oficina tarda 5 días en responder. Al medir 40 casos se ve que la solución técnica toma solo 30 minutos… el problema está <b>al inicio</b>: las solicitudes llegan incompletas y a la persona equivocada.</p>
+  ${TB(['Indicador','Antes','Meta'],[['Tiempo hasta asignar','1,2 días','menos de 2 horas'],['Solicitudes incompletas','60 %','menos de 15 %'],['Reenvíos equivocados','35 %','menos de 10 %'],['Respuesta total','5 días','2 días']])}
+  <p class="small">Mejora: formulario con campos obligatorios, reglas de asignación, respuesta automática con número de caso y la IA sugiriendo la categoría (con revisión humana).</p>
+  <h4 class="mt2">Mejorar siempre: ciclo PHVA</h4>
+  ${IG([['P','Planear','Problema, causa y meta.'],['H','Hacer','Probar en pequeño.'],['V','Verificar','Comparar con el antes.'],['A','Actuar','Si sirve, se adopta; si no, se ajusta.']])}
+  ${S('Idea central','Optimizar no es trabajar más rápido a cualquier costo: es quitar obstáculos y mejorar de forma medible y responsable.','target')}`],
+ ['Copilot',`
+  <h3>Microsoft Copilot: tu asistente</h3>
+  <p>Copilot es un asistente con IA al que le hablas con tus palabras. Te ayuda a <b>escribir, resumir, analizar y organizar</b> información. Te da un borrador; tú lo revisas y decides.</p>
+  ${TB(['Dónde','Para qué sirve'],[['Copilot Chat','Preguntar, explicar, generar ideas.'],['Word','Borradores, resúmenes, cambiar el tono.'],['Excel','Fórmulas, tendencias y gráficos.'],['PowerPoint','Estructura y diapositivas.'],['Outlook','Resumir correos y redactar respuestas.'],['Teams','Resumir reuniones, acuerdos y tareas.']])}
+  <p class="small">Las funciones dependen de la licencia y de la configuración de la entidad.</p>
+  <h4 class="mt2">Fórmula para pedirle bien</h4>
+  <p class="big">Rol + tarea + contexto + formato + criterios</p>
+  ${P('Explica la automatización.','Pedido débil')}
+  ${P('Actúa como formador del SENA. Explica qué es la automatización de procesos para personas principiantes, incluye dos ejemplos de empresas, usa lenguaje claro y termina con tres preguntas de repaso.','Pedido mejorado')}
+  <h4 class="mt2">Lo que NO debes asumir</h4>
+  ${UL(['No es infalible: puede equivocarse o inventar datos.','Que suene bien no significa que sea verdad.','No reemplaza tu conocimiento ni tu revisión.','No le entregues información que la entidad prohíbe compartir.'])}
+  <h4 class="mt2">Practica en cada aplicación</h4>
+  ${TB(['App','Ejercicio'],[['Word','Crear una guía de una página para identificar un proceso automatizable.'],['Excel','Analizar 6 meses de solicitudes ficticias y calcular % de atención.'],['PowerPoint','Presentación de 7 diapositivas: beneficios y límites de automatizar.'],['Outlook','Resumir un hilo de correos y redactar una respuesta de 150 palabras.'],['Teams','Convertir una reunión en tabla de tareas y responsables.']])}
+  ${P('Resume esta conversación en cinco puntos. Separa decisiones, tareas pendientes, responsables, fechas y preguntas sin resolver. Si falta un dato, escribe “por confirmar”.','Prompt para Outlook o Teams')}`],
+ ['Ingeniería de prompts',`
+  <h3>Cómo pedirle las cosas a la IA</h3>
+  ${S('En palabras simples','Un buen prompt le dice a la IA <b>qué hacer, para quién, con qué información y cómo entregarlo</b>. Como cuando le explicas un encargo a un compañero nuevo.')}
+  ${TB(['Elemento','Ejemplo'],[['Rol','Actúa como asistente administrativo.'],['Tarea','Resume el texto en tres ideas.'],['Contexto','Lo leerán personas que empiezan.'],['Información','Usa solo las notas que te pego.'],['Límites','Máximo 200 palabras. No inventes datos.'],['Formato','Entrégalo en una tabla.'],['Calidad','Claro y ordenado; señala dudas.']])}
+  ${P('Actúa como [rol]. Necesito que [tarea]. El contexto es [situación y público]. Usa [información] y no inventes datos. Entrégalo en [formato], con [extensión]. Asegúrate de que sea [criterios] y señala lo que falte.','Plantilla para reutilizar')}
+  <h4 class="mt2">Errores frecuentes</h4>
+  ${TB(['Error','Qué pasa','Cómo corregirlo'],[['Pedido muy amplio','Respuesta genérica','Di el objetivo y el público.'],['Sin contexto','La IA supone mal','Explica la situación.'],['Muchas tareas juntas','Se olvida partes','Divide por pasos.'],['Sin formato','Difícil de usar','Pide tabla, lista o correo.'],['Aceptar sin revisar','Errores o datos inventados','Verifica antes de usar.'],['Datos sensibles','Se expone información','Anonimiza.']])}
+  ${C(`<h4 style="margin-top:0">${I('quiz')} ¿Cuál prompt es mejor para resumir?</h4><p>A. Resume esto.<br>B. Haz un resumen muy bueno y completo.<br>C. Resume el texto en cinco ideas para principiantes, sin agregar información externa, y termina con tres palabras clave.</p><button class="btn ghost" data-toggle="r2">Ver respuesta</button><p id="r2" class="hide mt"><b>La C:</b> dice cuánto, para quién, qué no hacer y cómo cerrar.</p>`,'mt')}
+  ${S('Para recordar','Una buena instrucción no reemplaza tu criterio: lo orienta, lo acelera y facilita la revisión.','check')}`]
+ ],
+ quiz:[
+  ['La automatización con reglas fijas…',['Aprende sola con el tiempo','Sigue instrucciones exactas y no aprende','Siempre usa IA'],1,'Si la situación cambia, hay que reprogramarla.'],
+  ['Un cuello de botella es…',['El paso donde el proceso se atasca','El último paso del proceso','Un error de la IA'],0,'Es la etapa que frena todo lo demás.'],
+  ['Lo que entrega Copilot debe tratarse como…',['Una verdad definitiva','Un borrador para revisar','Un documento oficial'],1,'La decisión final sigue siendo humana.'],
+  ['¿Qué le falta a “Haz un informe sobre automatización”?',['Nada, está perfecto','Público, propósito, extensión y formato','Más signos de puntuación'],1,'Sin contexto la respuesta queda genérica.']]
+},
+dia3:{tag:'Día 3',title:'Analizar datos para decidir mejor',icon:'chart',
+ lead:'Los cuatro tipos de analítica, con un caso real de asistencia y herramientas que ya conoces.',
+ subs:[
+ ['¿Qué es analizar datos?',`
+  <h3>Convertir datos en decisiones</h3>
+  <p>La analítica de datos es <b>recoger, ordenar e interpretar</b> datos para tomar mejores decisiones. Un dato solo dice poco; comparado y con contexto se vuelve evidencia.</p>
+  ${FLOW('cadena básica de trabajo',[['Preguntar','¿qué necesito saber?'],['Recoger','formularios, registros'],['Limpiar','quitar errores y duplicados'],['Analizar','calcular y comparar'],['Comunicar','tablas y gráficos'],['Actuar','decidir y evaluar']])}
+  ${S('Idea clave','Analizar no es solo hacer gráficos: es convertir los datos en decisiones con sustento.')}
+  <p><a href="https://view.genially.com/6abe8fc954aee44c028bc294" target="_blank" rel="noopener">Ver la presentación del día →</a></p>
+  <h4 class="mt2">Al terminar podrás</h4>
+  ${UL(['Diferenciar los 4 tipos de analítica.','Hacer buenas preguntas a un conjunto de datos.','Ordenar y resumir datos en una hoja de cálculo.','Crear indicadores y gráficos sencillos.','Usar la IA como apoyo, verificando siempre.'])}`],
+ ['Los 4 tipos',`
+  <h3>Cuatro preguntas, cuatro tipos de analítica</h3>
+  ${G(2,[
+   C(`<span class="chip g">Descriptiva</span><h3 class="mt">¿Qué pasó?</h3><p>Resume con totales, promedios y gráficos.</p>${EX('30 aprendices; promedio de asistencia 84 %; 4 por debajo del 60 %.')}<p class="small">Herramientas: SUMA, PROMEDIO, CONTAR.SI, filtros, tablas dinámicas.</p>`),
+   C(`<span class="chip n">Diagnóstica</span><h3 class="mt">¿Por qué pasó?</h3><p>Compara grupos y fechas para encontrar causas posibles.</p>${EX('La asistencia bajó de 88 % a 76 %, sobre todo los viernes y en la jornada nocturna, después de un cambio de horario.')}<p class="small">Ojo: que dos cosas pasen juntas no prueba que una cause la otra.</p>`),
+   C(`<span class="chip g">Predictiva</span><h3 class="mt">¿Qué podría pasar?</h3><p>Usa lo que pasó antes para estimar el futuro.</p>${EX('Con 6 meses de consumo, se estima que el próximo mes se usarán unas 420 unidades.')}<p class="small">Una predicción no es una certeza: explica siempre tus supuestos.</p>`),
+   C(`<span class="chip n">Prescriptiva</span><h3 class="mt">¿Qué conviene hacer?</h3><p>Propone acciones según metas y recursos.</p>${EX('Con inventario limitado, priorizar los productos que más rotan.')}<p class="small">Una recomendación no reemplaza el criterio humano.</p>`)])}`],
+ ['Caso: asistencia',`
+  <h3>Caso práctico: ¿por qué faltan los aprendices?</h3>
+  <p>Un Centro de Formación revisa la asistencia de 30 aprendices (mañana, tarde y noche) durante 4 semanas. <span class="pill">Datos ficticios</span></p>
+  ${S('Pregunta central','¿Qué patrones de asistencia hay en el grupo y qué acciones podrían ayudar a prevenir la inasistencia?','target')}
+  <div class="grid g2 mt">${C(`<h4 style="margin-top:0">1 · Descriptiva — ¿qué pasó?</h4><div class="bars">${[['Semana 1',90.7],['Semana 2',86.7],['Semana 3',82.0],['Semana 4',79.3]].map(x=>`<div class="b"><span>${x[0]}</span><div><i style="width:${x[1]}%"></i></div><b>${x[1].toFixed(1).replace('.',',')}%</b></div>`).join('')}</div><p class="small">¿Qué tendencia ves? La asistencia baja cada semana.</p>`)}
+  ${C(`<h4 style="margin-top:0">2 · Diagnóstica — ¿por qué?</h4>${UL(['¿Baja igual en todas las jornadas?','¿Qué motivos se repiten más?','¿En qué semana cambia más?','¿Qué información falta para confirmar?'])}`)}
+  ${C(`<h4 style="margin-top:0">3 · Predictiva — ¿qué podría pasar?</h4><p>Si todo sigue igual, ¿cómo estará la asistencia en las próximas semanas? Arma tres escenarios: favorable, esperado y desfavorable.</p>`)}
+  ${C(`<h4 style="margin-top:0">4 · Prescriptiva — ¿qué hacer?</h4>${UL(['Seguimiento a quienes más faltan.','Revisar las causas que reportan.','Orientar hacia las rutas institucionales.','Medir si las acciones funcionan.'])}`)}</div>
+  <h4 class="mt2">Reto para los equipos</h4>
+  <p>Con el archivo <code>Caso_practico_analitica_asistencia_SENA.xlsx</code>: ordenen los datos, calculen indicadores, hagan el gráfico semanal, comparen jornadas, planteen una hipótesis, un escenario y una acción con su métrica.</p>
+  ${TB(['En la conclusión, separen','Qué es'],[['Datos','Lo que muestran los registros.'],['Interpretación','Lo que se deduce de ellos.'],['Hipótesis','Posible explicación por confirmar.'],['Predicción','Lo que podría pasar si…'],['Recomendación','La acción que proponen.']])}
+  ${S('Regla de oro','Anonimiza los datos, protege la información personal y valida los resultados antes de decidir.','shield')}`],
+ ['IA y herramientas',`
+  <h3>La IA gratuita como ayudante</h3>
+  <p>Puedes usar ChatGPT o Gemini (versión gratuita) para entender conceptos, revisar fórmulas, sugerir gráficos o proponer preguntas.</p>
+  ${P('Explica la diferencia entre analítica descriptiva y diagnóstica con un ejemplo de asistencia estudiantil. Usa lenguaje para principiantes.','Para entender un concepto')}
+  ${P('Tengo columnas Estudiante, Semana 1, Semana 2, Semana 3 y Semana 4. Propón una fórmula para calcular el porcentaje de asistencia por estudiante. Indica qué cambia entre Excel y Google Sheets.','Para revisar una hoja de cálculo')}
+  ${P('Estos son los resultados de asistencia: 95 %, 90 %, 75 %, 70 % y 50 %. Describe el patrón, sugiere dos preguntas diagnósticas y no afirmes causas que los datos no demuestran.','Para interpretar resultados')}
+  <h4 class="mt2">Reglas de uso responsable</h4>
+  ${UL(['No pongas nombres, documentos, teléfonos ni correos.','Revisa fórmulas y cálculos: la IA puede equivocarse.','No confundas “pasan juntos” con “una causa la otra”.','La decisión final es tuya.'])}
+  <h4 class="mt2">Herramientas sugeridas</h4>
+  ${TB(['Necesidad','Opciones'],[['Registrar y limpiar datos','Excel, Google Sheets, LibreOffice Calc'],['Resumir','Tablas dinámicas, filtros, funciones'],['Comunicar','PowerPoint, Google Slides, Canva'],['Redactar conclusiones','Word, Google Docs'],['Explorar ideas','IA generativa gratuita']])}
+  ${C(`<h4 style="margin-top:0">${I('flag')} Actividad de cierre</h4>En equipos, elijan un tema (asistencia, ventas, inventario, satisfacción…) y presenten máximo 5 diapositivas con: pregunta, datos limpios, gráfico, hipótesis, predicción, recomendación y una limitación.`,'mt')}`]
+ ],
+ quiz:[
+  ['“¿Por qué bajó la asistencia?” es una pregunta de analítica…',['Descriptiva','Diagnóstica','Prescriptiva'],1,'Busca las causas.'],
+  ['Una predicción es…',['Una certeza','Una estimación basada en el pasado','Una opinión sin datos'],1,'Puede cambiar si cambian las condiciones.'],
+  ['Si la jornada nocturna falta más, eso…',['Prueba que la jornada es la causa','Es una pista que hay que confirmar','No sirve para nada'],1,'Relación no es causa: se necesita más información.'],
+  ['Antes de usar datos reales en una IA debes…',['Anonimizarlos','Ponerlos en mayúsculas','Enviarlos por correo'],0,'Protege siempre la información personal.']]
+},
+dia4:{tag:'Día 4',title:'IA responsable en la gestión',icon:'brain',
+ lead:'IA aplicada a procesos administrativos, jurídicos, de talento humano y gestión documental.',
+ subs:[
+ ['Agenda',`
+  <h3>Una mañana para comprender. Una tarde para aplicar.</h3>
+  <p>7:30 a. m. – 5:30 p. m. · 8 horas de formación, 1 hora de almuerzo y dos pausas.</p>
+  ${G(2,[C(`<h4 style="margin-top:0">${I('sun')} Mañana</h4><div class="agenda">${[['7:30','Bienvenida y propósito'],['8:00','Industria 4.0'],['8:45','Metodologías de prompts'],['9:30','Pausa',1],['10:00','Procesos administrativos'],['10:30','Procesos jurídicos'],['11:00','Recursos humanos'],['11:30','Gestión documental'],['12:00','Demostración integrada'],['12:30','Almuerzo',1]].map(x=>`<div class="it ${x[2]?'pause':''}"><b class="t">${x[0]}</b><span>${x[1]}</span></div>`).join('')}</div>`),
+  C(`<h4 style="margin-top:0">${I('tool')} Tarde · Taller</h4><div class="agenda">${[['13:30','1. Elegir el reto'],['13:45','2. Analizar el proceso'],['14:05','3. Construir el prompt'],['14:50','4. Probar y verificar'],['15:30','Pausa',1],['16:00','5. Mejorar y volver a probar'],['16:40','6. Compartir'],['17:10','7. Cerrar y planear']].map(x=>`<div class="it ${x[2]?'pause':''}"><b class="t">${x[0]}</b><span>${x[1]}</span></div>`).join('')}</div><button class="btn mt" data-go="taller">Ir al taller →</button>`)])}`],
+ ['Industria 4.0',`
+  <h3>La cuarta revolución industrial</h3>
+  <p>Es la unión del mundo <b>físico</b> y el <b>digital</b>: máquinas, objetos y sistemas conectados que comparten datos. El término nació en Alemania en 2011.</p>
+  ${FLOW('las cuatro revoluciones',[['Vapor','siglo XVIII · máquinas'],['Electricidad','siglo XIX · producción en serie'],['Informática','siglo XX · computadores e internet'],['Conexión total','hoy · IoT, IA y nube']])}
+  <h4 class="mt2">Tecnologías clave</h4>
+  <div class="gl">${[['Internet de las cosas (IoT)','Aparatos conectados que envían datos en tiempo real.'],['Nube','Guardar y usar información desde cualquier lugar.'],['Blockchain','Registro seguro que no se puede alterar.'],['Robótica','Robots que hacen tareas repetitivas o peligrosas.'],['Gemelo digital','Copia virtual para probar cambios sin riesgo.'],['Ciberseguridad','Proteger sistemas y datos de ataques.'],['Realidad aumentada y virtual','Capacitar o asistir con imágenes digitales.']].map(x=>`<div><b>${x[0]}</b><p>${x[1]}</p></div>`).join('')}</div>
+  <h4 class="mt2">Lo que viene</h4>
+  ${G(3,[C('<b>IA multimodal</b><p class="small">Entiende a la vez texto, imágenes, audio y video.</p>'),C('<b>Agentes inteligentes</b><p class="small">No solo responden: planean y hacen tareas usando otras herramientas.</p>'),C('<b>Automatización autónoma</b><p class="small">Sistemas que operan y se ajustan casi sin supervisión.</p>')])}`],
+ ['Métodos de prompts',`
+  <h3>Recetas para escribir buenos prompts</h3>
+  <p>Hay varias “recetas”. Todas buscan lo mismo: que la IA entienda bien qué necesitas.</p>
+  ${C(`<span class="chip g">La principal</span><h3 class="mt">Método IDEAL</h3>${IG([['I','Identificar','el rol de la IA'],['D','Definir','contexto y tarea'],['E','Ejemplificar','un modelo (opcional)'],['A','Adaptar','tono y formato'],['L','Limitar','extensión y reglas']])}<button class="btn mt" data-go="ideal">Abrir el generador IDEAL →</button>`)}
+  <div class="grid g2 mt">
+  ${C(`<b>Modelo de 4 elementos</b><p class="small">Rol · Contexto · Origen (fuentes) · Expectativa (resultado).</p>`)}
+  ${C(`<b>CICLE</b><p class="small">Contexto · Instrucciones · Condiciones · Límites (qué NO hacer) · Salida (formato).</p>`)}
+  ${C(`<b>STAR</b><p class="small">Situación · Tarea · Acción que hará la IA · Resultado esperado.</p>`)}
+  ${C(`<b>Cadena de pensamiento</b><p class="small">Pedirle que razone “paso a paso” antes de responder. Reduce errores en cálculos.</p>`)}
+  ${C(`<b>Few-shot (con ejemplos)</b><p class="small">Mostrarle uno o dos ejemplos para que copie el formato.</p>`)}</div>
+  ${P('Contexto: soy asistente administrativo en una empresa de logística. Instrucciones: redacta un correo para informar a los clientes un retraso en la entrega. Condiciones: tono formal, máximo 150 palabras, con disculpas y nueva fecha estimada. Límites: no culpar a terceros. Salida: correo con asunto, saludo, cuerpo y despedida.','Ejemplo CICLE')}
+  ${P('Analiza paso a paso antes de responder: una empresa tiene 3 áreas con presupuestos de $50.000, $75.000 y $100.000. Si el total se reduce 15 % de forma proporcional, ¿cuál es el nuevo presupuesto de cada área? Muestra tu razonamiento.','Ejemplo cadena de pensamiento')}`],
+ ['Administrativo',`
+  <h3>IA en procesos administrativos</h3>
+  <p>Correos, resúmenes e informes: tareas diarias donde la IA ahorra tiempo. Copia el prompt, cambia lo que está entre [corchetes] y revisa el resultado.</p>
+  <h4>Correos</h4>
+  ${P('Actúa como asistente administrativo profesional. Redacta un correo formal para pedir el estado de la orden de compra #OC-2024-0156. Incluye asunto claro, saludo, contexto, la información que necesito (fecha de entrega y estado del pago) y despedida. Tono formal. Máximo 150 palabras.','Correo de solicitud')}
+  ${P('Redacta un correo de seguimiento para un cliente que no ha respondido una cotización enviada hace 5 días. Tono amable pero firme. Menciona la cotización #COT-2024-089 y ofrece resolver dudas.','Correo de seguimiento')}
+  <h4 class="mt2">Resúmenes</h4>
+  ${P('Analiza el siguiente documento y genera un resumen ejecutivo con: 1) objetivo, 2) máximo 5 puntos clave, 3) conclusiones, 4) acciones recomendadas. Máximo 200 palabras, en lenguaje claro para directivos. Documento: [pegar texto]','Resumen ejecutivo')}
+  ${P('Compara estos dos documentos e identifica: similitudes, diferencias, posibles inconsistencias y recomendaciones. Presenta una tabla comparativa. Documento A: [texto]. Documento B: [texto].','Comparar documentos')}
+  <h4 class="mt2">Informes y actas</h4>
+  ${P('A partir de estas notas de reunión, redacta un acta formal con: fecha, hora y lugar; asistentes; temas tratados; decisiones; compromisos (responsable y fecha) y próxima reunión. Notas: [pegar notas]','Acta de reunión')}
+  ${P('Actúa como analista de datos. Con estos datos de ventas del mes, genera un informe con: resumen de 3-4 líneas, top 5 de productos, comparación con el mes anterior, tendencias y recomendaciones. Datos: [pegar datos]. Usa viñetas y tablas.','Informe mensual')}`],
+ ['Jurídico',`
+  <h3>IA en procesos jurídicos</h3>
+  <p>La IA puede ayudar a <b>leer contratos, ubicar normas y detectar riesgos</b>. Es un primer filtro, no un abogado.</p>
+  ${S('Importante','La validación final de un contrato siempre la hace un abogado. Nunca pongas información confidencial de clientes en herramientas públicas.','shield')}
+  ${P('Actúa como abogado especialista en derecho civil. Revisa este contrato de arrendamiento e identifica: cláusulas esenciales (partes, objeto, plazo, renta, depósito), cláusulas ambiguas o de riesgo, obligaciones de cada parte, causales de terminación y recomendaciones. Presenta una tabla con nivel de riesgo (alto/medio/bajo). Contrato: [pegar texto]','Revisar contrato de arrendamiento')}
+  ${P('Revisa el siguiente contrato e identifica cláusulas que puedan ser desfavorables para una de las partes. Clasifícalas como aceptable, cuestionable o abusiva, explica por qué y sugiere una alternativa más equilibrada. Contrato: [pegar texto]','Detectar cláusulas abusivas')}
+  ${P('Actúa como investigador jurídico. Resume la normativa colombiana aplicable a [tema]. Incluye leyes y decretos principales, artículos más relevantes y fuentes oficiales para consultar. Indica qué debo verificar en la fuente original.','Búsqueda de normas')}
+  ${P('Crea una matriz de riesgos legales para [tipo de proyecto] con: riesgo, probabilidad, impacto, nivel y medidas para reducirlo. Incluye riesgos contractuales, laborales, tributarios y de propiedad intelectual.','Matriz de riesgos')}`],
+ ['Talento humano',`
+  <h3>IA en recursos humanos</h3>
+  <p>Ayuda a <b>organizar hojas de vida, escribir ofertas y preparar entrevistas</b>. La decisión de a quién contratar siempre es de una persona.</p>
+  ${S('Consejo SENA','Valida lo que dice la IA con entrevistas y verificaciones. Evalúa solo criterios del cargo, nunca atributos personales, para evitar sesgos.','users')}
+  ${P('Actúa como reclutador. Analiza esta hoja de vida para el cargo de [cargo] y evalúa: coincidencia con los requisitos (1 a 10), experiencia relevante, formación, habilidades técnicas, fortalezas y aspectos a verificar en entrevista. Hoja de vida: [texto]. Cargo: [descripción].','Analizar una hoja de vida')}
+  ${P('Crea una descripción de cargo para [cargo] en una empresa de [sector] con: título, objetivo, máximo 8 funciones, requisitos mínimos, competencias deseables y condiciones. Tono profesional y atractivo.','Descripción de cargo')}
+  ${P('Genera 10 preguntas de entrevista para [cargo]: 3 técnicas, 3 de habilidades blandas, 2 situaciones hipotéticas y 2 de motivación. Incluye qué observar en cada respuesta.','Preguntas de entrevista')}
+  ${P('Diseña un plan de capacitación para [grupo] con objetivos, módulos, metodología, duración, recursos y forma de evaluar.','Plan de capacitación')}`],
+ ['Gestión documental',`
+  <h3>IA en gestión documental</h3>
+  <p>Ayuda a <b>clasificar documentos y sacar datos</b> de facturas o contratos. Dos palabras clave:</p>
+  ${G(2,[C('<b>OCR</b><p class="small">Convierte una imagen o un escaneo en texto que se puede editar.</p>'),C('<b>IDP</b><p class="small">OCR + IA: lee, clasifica y extrae los datos del documento automáticamente.</p>')])}
+  ${S('Consejo SENA','La clasificación siempre sigue la Tabla de Retención Documental (TRD) de la entidad. La IA sugiere; el gestor documental valida.','book')}
+  ${P('Actúa como gestor documental. Clasifica estos documentos según la tabla de retención que te paso. Para cada uno indica: tipo documental, serie, subserie, soporte (físico/digital), tiempo de retención y disposición final. Si algo no está en la tabla, indícalo. Documentos: [lista]. Tabla: [pegar tabla].','Clasificar documentos')}
+  ${P('Extrae de esta factura y organiza en una tabla: número, fecha de emisión, proveedor, NIT, descripción, subtotal, IVA, total y fecha de vencimiento. Factura: [pegar datos].','Datos de una factura')}
+  ${EX('<b>Ejemplo:</b> “Contrato de prestación de servicios de mantenimiento de equipos” → Serie: Contratos (100) · Subserie: Contratos de prestación de servicios (100.03) · Soporte: digital y físico.')}`]
+ ],
+ quiz:[
+  ['En el método IDEAL, la “L” significa…',['Leer','Limitar','Listar'],1,'Definir extensión y reglas.'],
+  ['¿Quién valida al final un contrato revisado con IA?',['La IA','Un abogado','Nadie'],1,'La IA es solo un primer filtro.'],
+  ['Al comparar hojas de vida con IA se debe…',['Usar solo los criterios del cargo','Incluir datos personales del candidato','Dejar que la IA decida'],0,'Así se evitan sesgos; la decisión es humana.'],
+  ['Una “alucinación” de la IA es…',['Una respuesta muy creativa','Información falsa que parece verdadera','Un error de internet'],1,'Por eso siempre se verifica.']]
+}
+};
+
+const VOCAB=[['Inteligencia artificial (IA)','Máquinas que hacen tareas que normalmente requieren inteligencia humana.'],['Prompt','La instrucción que le escribes a la IA.'],['LLM','Modelo de lenguaje grande: la IA que entiende y escribe texto (ChatGPT, Claude, Gemini).'],['Machine Learning','Sistemas que aprenden de ejemplos en lugar de reglas fijas.'],['IA generativa','IA que crea textos, imágenes, audio o código.'],['Big Data','Volúmenes de datos tan grandes que no caben en herramientas comunes.'],['Automatización','Que un sistema haga solo una tarea repetitiva.'],['Cuello de botella','El paso donde un proceso se atasca.'],['OCR','Convierte texto escaneado o en foto en texto editable.'],['IDP','OCR + IA para leer y clasificar documentos.'],['Industria 4.0','Unión del mundo físico y digital con máquinas conectadas.'],['IoT','Objetos conectados a internet que envían datos.'],['Blockchain','Registro digital seguro que no se puede alterar.'],['Gemelo digital','Copia virtual de algo real para hacer pruebas.'],['LegalTech','Tecnología e IA aplicadas al trabajo jurídico.'],['Serie documental','Grupo de documentos de la misma clase.'],['Subserie documental','Subgrupo más específico dentro de una serie.'],['TRD','Tabla de Retención Documental: cuánto tiempo se guarda cada documento.'],['Few-shot','Dar ejemplos dentro del prompt para que la IA copie el patrón.'],['Cadena de pensamiento','Pedir a la IA que razone paso a paso.'],['Alucinación','Cuando la IA inventa información que parece real.'],['Humano en el circuito','La IA trabaja, pero una persona revisa y decide.'],['Analítica descriptiva','Responde: ¿qué pasó?'],['Analítica diagnóstica','Responde: ¿por qué pasó?'],['Analítica predictiva','Responde: ¿qué podría pasar?'],['Analítica prescriptiva','Responde: ¿qué conviene hacer?']];
+
+const CASES=[
+ ['A · Administrativo: seguimiento a una orden','Responder al cliente sin inventar información ni prometer una fecha no confirmada.','El cliente pregunta por la orden OC-0156 de 12 equipos. Fue recibida y espera confirmación del proveedor. No hay fecha de entrega. El próximo seguimiento interno es el viernes.','Correo de máximo 150 palabras con asunto, estado, siguiente paso y cierre.','¿Distingue el seguimiento interno de la fecha de entrega? Luego: el proveedor confirma entrega el martes. ¿Actualiza solo lo necesario?'],
+ ['B · Jurídico: revisión preliminar de un acuerdo','Detectar frases ambiguas y preparar preguntas para un abogado.','“El proveedor realizará mantenimiento durante seis meses. El pago será de $2.000.000 mensuales. Atenderá las solicitudes oportunamente. El cliente podrá terminar el servicio cuando lo considere necesario. Las partes guardarán confidencialidad.”','Tabla: fragmento, ambigüedad, posible impacto y pregunta. Sin dar un concepto legal.','¿Cada observación sale del texto? Luego agreguen: “se atenderán en dos días hábiles”. ¿Corrige esa observación?'],
+ ['C · Talento humano: comparar perfiles','Organizar la evidencia con los mismos criterios y dejar la decisión a una persona.','Cargo: auxiliar administrativo. Criterios: 1 año en archivo, hojas de cálculo y atención al usuario. Perfil A: 2 años archivo, filtros y tablas, 6 meses atención. Perfil B: 1 año archivo, hojas de cálculo sin documentar, 2 años atención. Perfil C: 6 meses archivo, tablas dinámicas, 1 año atención.','Matriz con “cumple”, “no cumple” o “por confirmar” y preguntas de entrevista.','¿Convierte un dato faltante en “no cumple”? Luego añadan al perfil B filtros y fórmulas.'],
+ ['D · Gestión documental: clasificar','Clasificar registros con una tabla dada y marcar lo que no está claro.','Tabla: Compras → Órdenes de compra; Talento humano → Solicitudes de vacaciones; Órganos de dirección → Actas de comité. D01: orden de compra de 12 equipos. D02: solicitud de vacaciones. D03: acta del comité. D04: correo con asunto “Solicitud” sin contenido.','Tabla con ID, serie, subserie, evidencia y datos faltantes. Sin inventar tiempos de retención.','D04 debe quedar pendiente. Luego añadan: “Solicito vacaciones del 1 al 5 de noviembre”.']
+];
+
+const SECTIONS=[['home','home','Inicio'],['dia1','rocket','Día 1 · Transformación digital'],['dia2','gear','Día 2 · Automatizar'],['dia3','chart','Día 3 · Analizar datos'],['dia4','brain','Día 4 · IA en la gestión'],['taller','tool','Taller práctico'],['ideal','wand','Generador IDEAL'],['vocab','book','Vocabulario'],['cierre','flag','Al finalizar']];
+
+/* ===== SIMULACIONES ===== */
+let simTab={dia1:0,dia2:0,dia3:0,dia4:0};
+const SIMLIST={
+dia1:[['Sube la pirámide','Tienda Andina: de 1.000 registros a una decisión.','piramide'],['Clasificador DIKW','¿Dato, información, conocimiento o inteligencia?','dikw'],['Limpia los datos','La “V” de veracidad: deja la tabla lista para analizar.','limpieza'],['¿Es IA o no?','Distingue un programa tradicional de una IA.','esia'],['Entrena un filtro de spam','Enséñale con ejemplos y mira cómo acierta.','spam'],['¿Cómo aprende?','Supervisado, no supervisado o por refuerzo.','mltipo'],['La siguiente palabra','Así “escribe” una IA generativa y qué hace la temperatura.','token']],
+dia2:[['¿Reglas o IA?','Decide qué tipo de automatización necesita cada tarea.','reglas'],['Encuentra el cuello de botella','Mueve personas entre etapas y mira dónde se atasca.','cuello'],['Prioriza el problema','Impacto × frecuencia × facilidad.','priorizar'],['Medidor de prompts','Escribe un prompt y revisa qué le falta.','medidor']],
+dia3:[['Calculadora de asistencia','Analítica descriptiva con datos ficticios.','asistencia'],['Proyecta la tendencia','Analítica predictiva con tres escenarios.','proyeccion'],['¿Qué tipo de analítica?','Relaciona cada pregunta con su tipo.','tipoana'],['Matriz de decisión','Analítica prescriptiva: elige la mejor acción.','matriz']],
+dia4:[['Semáforo de uso responsable','¿Verde, amarillo o rojo?','semaforo'],['Detecta la alucinación','Marca lo que la IA inventó.','alucina'],['Clasifica con la TRD','Gestión documental con la tabla del taller.','trd'],['Arma el prompt CICLE','Ordena las piezas en su lugar.','cicle']]
+};
+/* motor genérico de clasificación */
+function CLS(box,cfg){
+ box.innerHTML=`<p>${cfg.intro}</p>${cfg.items.map((it,i)=>`<div class="row" style="justify-content:space-between;padding:9px 0;border-top:${i?'1px solid var(--line)':'0'}"><span style="flex:1;min-width:220px">${it[0]}</span><select data-c="${i}" style="width:auto;min-width:170px"><option value="">Elegir…</option>${cfg.opts.map((o,j)=>`<option value="${j}">${o}</option>`).join('')}</select></div><div class="fb hide" id="cf${i}"></div>`).join('')}<div class="row mt"><button class="btn" id="cOk">Revisar</button><button class="btn ghost" id="cRe">Reiniciar</button><span id="cSc" class="small"></span></div>`;
+ box.querySelector('#cOk').onclick=()=>{let ok=0;cfg.items.forEach((it,i)=>{const v=box.querySelector(`[data-c="${i}"]`).value,f=box.querySelector('#cf'+i);f.classList.remove('hide');
+  if(v==='')f.innerHTML='<span class="warnc">Sin responder.</span>';else if(+v===it[1]){ok++;f.innerHTML=`<span class="okc">✓ Correcto.</span> ${it[2]||''}`}else f.innerHTML=`<span class="badc">✗ Era: ${cfg.opts[it[1]]}.</span> ${it[2]||''}`});
+  box.querySelector('#cSc').innerHTML=`<span class="score" style="font-size:26px">${ok}/${cfg.items.length}</span>`};
+ box.querySelector('#cRe').onclick=()=>CLS(box,cfg);}
+const shuffle=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
+
+const SIM={
+/* ---------- DÍA 1 ---------- */
+piramide(box){const L=[
+ ['Datos','#00304D','1.000 filas sueltas en el sistema de la tienda:',`<code>2026-10-03 · 14:05 · P-118 · 2 · 9.800</code><br><code>2026-10-03 · 14:06 · P-022 · 1 · 4.500</code><br><code>…</code><p class="small">Fechas, códigos y números. Solos no dicen nada.</p>`,'Dar contexto → Información'],
+ ['Información','#00476F','Organizamos y le damos contexto:',TB(['Producto','Ventas oct.','Días con lluvia'],[['Paraguas','320','12'],['Chocolate caliente','280','12'],['Gafas de sol','40','12']])+'<p class="small">Ahora sabemos qué, cuánto y cuándo.</p>','Buscar patrones → Conocimiento'],
+ ['Conocimiento','#007832','Comparamos con meses anteriores y encontramos un patrón:',EX('<b>Patrón:</b> los días de lluvia las ventas de paraguas y chocolate suben 35 %, y las gafas casi no se venden.'),'Decidir y automatizar → Inteligencia'],
+ ['Inteligencia','#39A900','Usamos ese conocimiento para actuar:',EX('<b>Decisión:</b> cuando el pronóstico anuncia lluvia, el sistema pone paraguas y chocolate en la portada y envía un cupón de 10 % a clientes cercanos.')+'<p class="small">Aquí es donde actúan la IA y la automatización.</p>','Reiniciar']];
+ let s=0;const draw=()=>{const l=L[s];box.innerHTML=`<div class="timeline">${L.map((x,i)=>`<i style="flex:1;background:${i<=s?x[1]:'var(--line)'}"></i>`).join('')}</div><p class="small">Escalón ${s+1} de 4</p><h3 style="color:${l[1]}">${l[0]}</h3><p>${l[2]}</p>${l[3]}<div class="row mt">${s>0?'<button class="btn ghost" id="pB">← Volver</button>':''}<button class="btn" id="pN">${l[4]}</button></div>`;
+  box.querySelector('#pN').onclick=()=>{s=s<3?s+1:0;draw()};const b=box.querySelector('#pB');if(b)b.onclick=()=>{s--;draw()};};draw();},
+dikw(box){CLS(box,{intro:'Elige el escalón de la pirámide al que pertenece cada enunciado.',opts:['Dato','Información','Conocimiento','Inteligencia'],items:shuffle([
+ ['El número 78.',0,'Un número suelto, sin contexto.'],['“Carlos”, “Bogotá”, “3”.',0,'Palabras sin relación entre sí.'],
+ ['78 aprendices se inscribieron al curso de Excel en octubre.',1,'El dato tiene contexto: qué, cuántos, cuándo.'],['El 40 % de las PQRS llegaron por correo electrónico este mes.',1,'Dato organizado con contexto.'],
+ ['Cuando el curso es virtual, la deserción es mayor en las primeras dos semanas.',2,'Es un patrón que explica el porqué.'],['Las solicitudes se demoran más cuando llegan sin documentos completos.',2,'Relación entre causas y resultados.'],
+ ['El sistema envía un recordatorio automático a quien lleva 3 días sin ingresar.',3,'Usa el conocimiento para actuar.'],['Se abre un grupo extra automáticamente cuando la demanda supera 120 inscritos.',3,'Decisión automática basada en un patrón.']])});},
+limpieza(box){const base=[['A01','Ana','15/10/2026','45000'],['A02','Luis','2026-10-15','32000'],['A02','Luis','2026-10-15','32000'],['A03','','16/10/2026','28000'],['A04','Marta','17/10/2026','-5000'],['A05','Pedro','17/10/2026','30 mil']];
+ const acts=[['dup','Quitar duplicados'],['vac','Tratar vacíos'],['fmt','Unificar fechas'],['num','Corregir formato de valores'],['imp','Descartar imposibles']];let done={};
+ const draw=()=>{let r=base.map(x=>[...x]);if(done.dup)r=r.filter((x,i)=>!(i==2));if(done.vac)r=r.map(x=>x[1]?x:[x[0],'(sin nombre – verificar)',x[2],x[3]]);if(done.fmt)r=r.map(x=>[x[0],x[1],x[2].includes('/')?x[2].split('/').reverse().join('-'):x[2],x[3]]);if(done.num)r=r.map(x=>[x[0],x[1],x[2],x[3]=='30 mil'?'30000':x[3]]);if(done.imp)r=r.filter(x=>+x[3]>=0||isNaN(+x[3]));
+  const q=Math.round(Object.keys(done).length/acts.length*100);
+  box.innerHTML=`<p>Una tabla de ventas llegó con errores. Aplica cada limpieza y mira cómo cambia. <b>Datos malos = decisiones malas.</b></p>${TB(['ID','Cliente','Fecha','Valor'],r.map(x=>x.map(c=>c===''?'<span class="badc">vacío</span>':(/^-|mil$/.test(c)||(c.includes('/')&&!done.fmt))?`<mark>${c}</mark>`:c)))}
+  <div class="row mt">${acts.map(a=>`<button class="btn ${done[a[0]]?'':'alt'}" data-a="${a[0]}" ${done[a[0]]?'disabled style="opacity:.55"':''}>${done[a[0]]?'✓ ':''}${a[1]}</button>`).join('')}</div>
+  <p class="mt"><b>Calidad de los datos:</b></p><div class="meter"><i style="width:${q}%;background:${q==100?'var(--ok)':q>=60?'var(--warn)':'var(--bad)'}"></i></div><p class="small">${q==100?'¡Tabla confiable! Ahora sí se puede analizar.':q+'% lista'}</p><button class="btn ghost" id="lR">Reiniciar</button>`;
+  box.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{done[b.dataset.a]=1;draw()});box.querySelector('#lR').onclick=()=>{done={};draw()};};draw();},
+esia(box){CLS(box,{intro:'¿Este sistema usa inteligencia artificial o es un programa tradicional con reglas fijas?',opts:['Es IA','Programa tradicional'],items:shuffle([
+ ['Una calculadora que suma valores.',1,'Sigue una regla fija, no aprende.'],['El celular que reconoce tu cara para desbloquearse.',0,'Aprendió a reconocer rostros con ejemplos.'],
+ ['Una alarma que suena todos los días a las 6:00 a. m.',1,'Regla fija programada.'],['Netflix recomendándote una serie.',0,'Aprende de lo que ves.'],
+ ['Una macro de Excel que copia datos de una hoja a otra.',1,'Ejecuta siempre los mismos pasos.'],['Un traductor que convierte una frase del inglés al español.',0,'Aprendió patrones del lenguaje.']])});},
+spam(box){const train=[['¡Ganaste un premio! Reclama ya tu dinero gratis','s'],['Recordatorio: comité académico el jueves a las 9','n'],['Oferta exclusiva: haz clic y gana un celular gratis','s'],['Adjunto el acta de la reunión de ayer','n'],['Tu cuenta será bloqueada, confirma tu clave aquí urgente','s'],['¿Puedes revisar el informe de asistencia?','n']];
+ const test=[['Urgente: gana dinero gratis con un clic','s'],['Te envío el informe de la reunión del comité','n'],['Confirma tu clave para reclamar el premio','s'],['¿A qué hora es la reunión del jueves?','n']];
+ let lab={},phase=0;const words=t=>t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').match(/[a-zñ]{4,}/g)||[];
+ const draw=()=>{if(phase==0){box.innerHTML=`<p><b>Paso 1 · Entrena.</b> Eres quien enseña: marca cada mensaje. El modelo aprenderá de tus etiquetas (aprendizaje supervisado).</p>${train.map((m,i)=>`<div class="row" style="padding:7px 0;border-top:${i?'1px solid var(--line)':'0'}"><span style="flex:1;min-width:200px">${m[0]}</span><button class="btn ${lab[i]=='s'?'':'ghost'}" data-l="${i}:s">Spam</button><button class="btn ${lab[i]=='n'?'alt':'ghost'}" data-l="${i}:n">No spam</button></div>`).join('')}<button class="btn mt" id="sT" ${Object.keys(lab).length<6?'disabled style="opacity:.5"':''}>Entrenar modelo →</button>`;
+   box.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{const[i,v]=b.dataset.l.split(':');lab[i]=v;draw()});box.querySelector('#sT').onclick=()=>{phase=1;draw()};}
+  else{const sp={},hm={};train.forEach((m,i)=>words(m[0]).forEach(w=>{(lab[i]=='s'?sp:hm)[w]=((lab[i]=='s'?sp:hm)[w]||0)+1}));
+   let ok=0;const rows=test.map(m=>{const ws=words(m[0]);const s=ws.reduce((a,w)=>a+(sp[w]||0)-(hm[w]||0),0);const p=s>0?'s':'n';if(p==m[1])ok++;return [m[0],`<b>${p=='s'?'Spam':'No spam'}</b>`,ws.filter(w=>sp[w]).map(w=>`<mark>${w}</mark>`).join(' ')||'—',p==m[1]?'<span class="okc">✓</span>':'<span class="badc">✗</span>']});
+   const wrong=train.filter((m,i)=>lab[i]!=m[1]).length;
+   box.innerHTML=`<p><b>Paso 2 · Prueba.</b> El modelo nunca vio estos mensajes. Clasifica según las palabras que aprendió de ti.</p>${TB(['Mensaje nuevo','Predicción','Palabras de spam que detectó','¿Acertó?'],rows)}<p class="mt"><span class="score" style="font-size:26px">${ok}/4</span> aciertos</p>${S('¿Qué aprendimos?',wrong?`Marcaste ${wrong} ejemplo(s) de forma distinta a lo esperado y eso afecta al modelo: <b>si enseñamos mal, la IA aprende mal</b>.`:'El modelo aprendió bien porque los ejemplos estaban bien etiquetados. <b>La calidad de la IA depende de la calidad de los datos.</b>')}<button class="btn ghost" id="sR">Volver a entrenar</button>`;
+   box.querySelector('#sR').onclick=()=>{lab={};phase=0;draw()};}};draw();},
+mltipo(box){CLS(box,{intro:'¿Qué tipo de Machine Learning se usa en cada caso?',opts:['Supervisado','No supervisado','Por refuerzo'],items:shuffle([
+ ['Robot aspiradora que gana puntos cada vez que limpia sin chocar.',2,'Aprende por prueba y error con recompensas.'],['Agrupar 50.000 aprendices sin etiquetas en perfiles parecidos.',1,'Busca grupos sin respuesta conocida.'],
+ ['Revisar facturas nuevas con 5.000 facturas marcadas “Aprobada” o “Con error”.',0,'Aprende de ejemplos con la respuesta.'],['Predecir el precio de un arriendo con datos de arriendos anteriores.',0,'Tiene ejemplos con el precio real.'],
+ ['Una tienda que separa a sus clientes en grupos según cómo compran.',1,'Segmentación sin etiquetas.'],['Un programa que aprende a jugar ajedrez ganando y perdiendo partidas.',2,'Recompensa: ganar.']])});},
+token(box){const ctx='El aprendiz entregó la';const W=[['actividad',45],['evidencia',25],['tarea',15],['guía',10],['jirafa',5]];let t=1,gen=[];
+ const probs=()=>{const e=W.map(w=>Math.pow(w[1],1/t));const s=e.reduce((a,b)=>a+b,0);return W.map((w,i)=>[w[0],e[i]/s*100])};
+ const draw=()=>{const p=probs();box.innerHTML=`<p>Una IA generativa no “sabe” la respuesta: calcula <b>qué palabra es más probable</b> que siga. La <b>temperatura</b> controla qué tanto se arriesga.</p>
+  <div class="out" style="font-size:17px">${ctx} <b style="color:var(--sena2)">___</b></div>
+  <div class="bars mt">${p.map(x=>`<div class="b"><span>${x[0]}</span><div><i style="width:${x[1]}%;background:${x[0]=='jirafa'?'var(--bad)':'var(--sena)'}"></i></div><b>${x[1].toFixed(0)}%</b></div>`).join('')}</div>
+  <label class="f">Temperatura: <b>${t.toFixed(1)}</b> · ${t<0.6?'muy predecible':t<1.3?'equilibrada':'muy creativa (y arriesgada)'}</label><input type="range" min="0.2" max="2.5" step="0.1" value="${t}" id="tT" style="width:100%">
+  <div class="row mt"><button class="btn" id="tG">Generar 5 veces</button><button class="btn ghost" id="tR">Limpiar</button></div>
+  ${gen.length?`<div class="out mt">${gen.map(g=>`${ctx} <b class="${g=='jirafa'?'badc':''}">${g}</b>`).join('\n')}</div>`:''}
+  ${S('Para recordar','Temperatura baja = respuestas seguras y repetidas. Temperatura alta = más variadas, pero puede salir algo sin sentido (“jirafa”). Por eso <b>siempre revisamos</b>.')}`;
+  box.querySelector('#tT').oninput=e=>{t=+e.target.value;draw()};box.querySelector('#tR').onclick=()=>{gen=[];draw()};
+  box.querySelector('#tG').onclick=()=>{gen=[];for(let k=0;k<5;k++){let r=Math.random()*100,a=0;for(const x of p){a+=x[1];if(r<=a){gen.push(x[0]);break}}}draw()};};draw();},
+/* ---------- DÍA 2 ---------- */
+reglas(box){CLS(box,{intro:'¿Esta tarea se automatiza con reglas fijas o necesita inteligencia artificial?',opts:['Reglas fijas','Con IA'],items:shuffle([
+ ['Enviar un correo de confirmación cada vez que alguien se inscribe.',0,'Siempre pasa lo mismo: una regla basta.'],['Entender correos escritos libremente y decir de qué tema tratan.',1,'Requiere comprender lenguaje.'],
+ ['Calcular el total de una factura sumando sus ítems.',0,'Es una operación fija.'],['Resumir un acta de reunión de 10 páginas.',1,'Hay que interpretar el texto.'],
+ ['Mover a una carpeta los archivos que terminan en .pdf.',0,'Regla clara y predecible.'],['Leer una factura escaneada y extraer el NIT y el valor.',1,'Necesita OCR e IA para entender el documento.']])});},
+cuello(box){let st=[['Recibir formulario',10,1],['Revisar datos',15,1],['Validar requisitos',40,1],['Registrar',10,1],['Enviar confirmación',5,1]];const demand=30;
+ const draw=()=>{const cap=st.map(s=>Math.floor(s[2]*480/s[1]));const min=Math.min(...cap);const bi=cap.indexOf(min);const used=st.reduce((a,s)=>a+s[2],0);
+  box.innerHTML=`<p>Llegan <b>${demand} solicitudes al día</b>. Cada etapa atiende según cuánto tarda cada caso y cuántas personas tiene (jornada de 8 h). El proceso solo avanza tan rápido como su etapa más lenta. Tienes <b>${8-used}</b> persona(s) disponibles.</p>
+  ${TB(['Etapa','Min. por caso','Personas','Capacidad diaria',''],st.map((s,i)=>[`<b>${s[0]}</b>`,s[1],`<div class="row"><button class="btn ghost" data-m="${i}" style="padding:2px 10px">−</button><b>${s[2]}</b><button class="btn ghost" data-p="${i}" style="padding:2px 10px" ${used>=8?'disabled':''}>+</button></div>`,`<div class="bars"><div class="b" style="grid-template-columns:1fr 46px"><div><i style="width:${Math.min(100,cap[i]/60*100)}%;background:${i==bi?'var(--bad)':'var(--sena)'}"></i></div><b>${cap[i]}</b></div></div>`,i==bi?'<span class="badc">Cuello de botella</span>':'']))}
+  <div class="mt">${min>=demand?S('¡Lo lograste!',`El proceso atiende <b>${min} casos al día</b> y llegan ${demand}. Ya no se acumulan solicitudes.`,'check'):S('Se está acumulando trabajo',`El proceso solo puede atender <b>${min} casos al día</b> y llegan ${demand}: cada día quedan ${demand-min} pendientes. Pista: refuerza la etapa en rojo.`,'clock')}</div>
+  <button class="btn ghost" id="cR">Reiniciar</button>`;
+  box.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{st[+b.dataset.p][2]++;draw()});box.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{const s=st[+b.dataset.m];if(s[2]>1)s[2]--;draw()});
+  box.querySelector('#cR').onclick=()=>{st.forEach(s=>s[2]=1);draw()};};draw();},
+priorizar(box){const P=[['Documentos incompletos',5,5,4],['Registro manual repetido',4,4,3],['Confirmación tardía',3,3,5],['Firma de una sola persona',4,3,2]];
+ const draw=()=>{const sc=P.map(p=>p[1]*p[2]*p[3]);const ord=sc.map((s,i)=>[s,i]).sort((a,b)=>b[0]-a[0]);
+  box.innerHTML=`<p>Califica de 1 a 5 cada problema. <b>Prioridad = impacto × frecuencia × facilidad de mejora</b>. Empieza por el de mayor puntaje.</p>${TB(['Problema','Impacto','Frecuencia','Facilidad','Puntaje'],P.map((p,i)=>[p[0],...[1,2,3].map(j=>`<select data-pr="${i}:${j}" style="width:64px">${[1,2,3,4,5].map(v=>`<option ${v==p[j]?'selected':''}>${v}</option>`).join('')}</select>`),`<b>${sc[i]}</b>`]))}
+  <h4>Orden sugerido</h4><ol class="list">${ord.map((o,k)=>`<li>${k==0?'<b>':''}${P[o[1]][0]} (${o[0]})${k==0?' ← empieza aquí</b>':''}</li>`).join('')}</ol>`;
+  box.querySelectorAll('[data-pr]').forEach(s=>s.onchange=()=>{const[i,j]=s.dataset.pr.split(':');P[i][j]=+s.value;draw()});};draw();},
+medidor(box){let txt=box.dataset.v||'Haz un informe sobre automatización.';
+ const C=[['Rol','Dice qué papel asume la IA (“Actúa como…”).',/act[uú]a como|eres un|eres una|como (un|una) (experto|asistente|analista|formador|instructor)/i],['Público o contexto','Dice para quién o en qué situación (“para aprendices…”, “el contexto es…”).',/para (aprendices|personas|el equipo|directivos|clientes|principiantes|un grupo)|contexto|dirigido a|destinatario/i],['Tarea clara','Usa un verbo concreto: resume, redacta, explica, compara, clasifica…',/resum|redact|explic|compar|clasific|analiz|elabor|crea|dise[ñn]|propon|organiz/i],['Formato','Pide tabla, lista, correo, pasos…',/tabla|lista|vi[ñn]etas|correo|pasos|diapositiva|resumen ejecutivo|columnas/i],['Extensión o límites','Dice cuánto (“máximo 150 palabras”, “cinco ideas”).',/m[aá]ximo|palabras|l[ií]neas|\b(tres|cuatro|cinco|seis|[0-9]+) (ideas|puntos|preguntas|ejemplos|diapositivas)/i],['No inventar / verificar','Pide no inventar y señalar lo que falta.',/no inventes|no agregues|se[ñn]ala|indica (si|lo que) falta|por confirmar|supuestos/i]];
+ const draw=()=>{const r=C.map(c=>c[2].test(txt));const n=r.filter(Boolean).length;
+  box.innerHTML=`<p>Escribe o pega un prompt. El medidor revisa si tiene las partes de un buen pedido.</p><textarea id="mT" style="min-height:110px">${esc(txt)}</textarea>
+  <div class="row mt"><button class="btn ghost" id="mE1">Ejemplo débil</button><button class="btn ghost" id="mE2">Ejemplo fuerte</button></div>
+  <p class="mt"><b>${n} de 6</b> · ${n<=2?'Prompt débil':n<=4?'Va mejorando':'¡Prompt completo!'}</p><div class="meter"><i style="width:${n/6*100}%;background:${n<=2?'var(--bad)':n<=4?'var(--warn)':'var(--ok)'}"></i></div>
+  <div class="gl mt">${C.map((c,i)=>`<div style="border-left:4px solid ${r[i]?'var(--ok)':'var(--bad)'}"><b>${r[i]?'✓':'✗'} ${c[0]}</b><p>${c[1]}</p></div>`).join('')}</div><p class="small mt">Es un revisor sencillo por palabras clave: te orienta, pero tu criterio decide.</p>`;
+  const ta=box.querySelector('#mT');ta.oninput=()=>{txt=ta.value;const p=ta.selectionStart;draw();const n2=box.querySelector('#mT');n2.focus();n2.setSelectionRange(p,p)};
+  box.querySelector('#mE1').onclick=()=>{txt='Haz un informe sobre automatización.';draw()};
+  box.querySelector('#mE2').onclick=()=>{txt='Actúa como formador del SENA. Para aprendices principiantes, explica qué es la automatización de procesos con dos ejemplos. Entrégalo en una lista de máximo 200 palabras. No inventes datos y señala lo que falte.';draw()};};draw();},
+/* ---------- DÍA 3 ---------- */
+asistencia(box){const A=[['AP-01',15],['AP-02',13],['AP-03',9],['AP-04',16],['AP-05',11],['AP-06',7]];const tot=16;
+ const draw=()=>{const pc=A.map(a=>a[1]/tot*100);const prom=pc.reduce((a,b)=>a+b,0)/pc.length;const bajo=pc.filter(p=>p<80).length;
+  box.innerHTML=`<p>Cambia las sesiones asistidas (de ${tot}) de cada aprendiz ficticio. La hoja calcula sola, como harías con <code>=B2/16</code> y <code>=PROMEDIO()</code>.</p>
+  ${TB(['Aprendiz','Sesiones asistidas','% asistencia','Estado'],A.map((a,i)=>[a[0],`<input type="number" min="0" max="${tot}" value="${a[1]}" data-as="${i}" style="width:80px">`,`<div class="bars"><div class="b" style="grid-template-columns:1fr 50px"><div><i style="width:${pc[i]}%;background:${pc[i]>=80?'var(--ok)':pc[i]>=60?'var(--warn)':'var(--bad)'}"></i></div><b>${pc[i].toFixed(0)}%</b></div></div>`,pc[i]>=80?'<span class="okc">Bien</span>':pc[i]>=60?'<span class="warnc">Alerta</span>':'<span class="badc">Riesgo</span>']))}
+  <div class="grid g3 mt">${C(`<div class="kpi"><div class="ic">${I('chart')}</div><div><b>${prom.toFixed(1)}%</b><span>promedio del grupo</span></div></div>`)}${C(`<div class="kpi"><div class="ic">${I('users')}</div><div><b>${bajo}</b><span>bajo el 80 %</span></div></div>`)}${C(`<div class="kpi"><div class="ic">${I('target')}</div><div><b>${((A.length-bajo)/A.length*100).toFixed(0)}%</b><span>cumple la meta</span></div></div>`)}</div>
+  ${S('Pregunta','¿Qué describe mejor al grupo: el promedio o el porcentaje que cumple la meta? Fíjate que un promedio “bueno” puede esconder a aprendices en riesgo.')}`;
+  box.querySelectorAll('[data-as]').forEach(x=>x.onchange=()=>{A[+x.dataset.as][1]=Math.max(0,Math.min(tot,+x.value||0));draw()});};draw();},
+proyeccion(box){let v=[90.7,86.7,82.0,79.3];
+ const draw=()=>{const n=v.length,xm=(n+1)/2,ym=v.reduce((a,b)=>a+b,0)/n;const m=v.reduce((a,y,i)=>a+(i+1-xm)*(y-ym),0)/v.reduce((a,_,i)=>a+(i+1-xm)**2,0);const b=ym-m*xm;
+  const f=x=>Math.max(0,Math.min(100,b+m*x));const sc=[['Favorable','var(--ok)',0.5],['Esperado','var(--warn)',1],['Desfavorable','var(--bad)',1.5]];
+  const proj=sc.map(s=>[5,6,7,8].map(x=>Math.max(0,Math.min(100,v[n-1]+m*s[2]*(x-n)))));
+  const W=560,Hh=220,px=x=>40+(x-1)/7*(W-60),py=y=>Hh-20-(y-50)/50*(Hh-40);
+  box.innerHTML=`<p>Edita la asistencia de las 4 semanas. La línea de tendencia (como <code>PRONOSTICO.LINEAL</code>) proyecta las semanas 5 a 8 en tres escenarios.</p>
+  <div class="row">${v.map((y,i)=>`<label class="small">Sem. ${i+1}<br><input type="number" step="0.1" value="${y}" data-pv="${i}" style="width:80px"></label>`).join('')}</div>
+  <div class="info mt"><svg class="inf" viewBox="0 0 ${W} ${Hh}">${[50,60,70,80,90,100].map(y=>`<line x1="40" x2="${W-20}" y1="${py(y)}" y2="${py(y)}" stroke="currentColor" opacity=".12"/><text x="8" y="${py(y)+4}" font-size="11" fill="currentColor" opacity=".6">${y}%</text>`).join('')}
+   ${sc.map((s,k)=>`<polyline fill="none" stroke="${s[1]}" stroke-width="2" stroke-dasharray="5 4" points="${px(n)},${py(v[n-1])} ${proj[k].map((y,i)=>px(5+i)+','+py(y)).join(' ')}"/>`).join('')}
+   <polyline fill="none" stroke="var(--nv)" stroke-width="3" points="${v.map((y,i)=>px(i+1)+','+py(y)).join(' ')}"/>${v.map((y,i)=>`<circle cx="${px(i+1)}" cy="${py(y)}" r="4" fill="var(--nv)"/>`).join('')}
+   ${[1,2,3,4,5,6,7,8].map(x=>`<text x="${px(x)-10}" y="${Hh-4}" font-size="11" fill="currentColor" opacity=".6">S${x}</text>`).join('')}</svg></div>
+  ${TB(['Escenario','Semana 6','Semana 8'],sc.map((s,k)=>[`<b style="color:${s[1]}">${s[0]}</b>`,proj[k][1].toFixed(1)+'%',proj[k][3].toFixed(1)+'%']))}
+  ${S('Supuesto',`La asistencia cambia en promedio <b>${m.toFixed(1)} puntos por semana</b>. Esto no es una certeza: si algo cambia (un nuevo horario, una acción de seguimiento), la proyección también cambia.`,'clock')}`;
+  box.querySelectorAll('[data-pv]').forEach(x=>x.onchange=()=>{v[+x.dataset.pv]=Math.max(0,Math.min(100,+x.value||0));draw()});};draw();},
+tipoana(box){CLS(box,{intro:'¿Qué tipo de analítica responde cada pregunta?',opts:['Descriptiva','Diagnóstica','Predictiva','Prescriptiva'],items:shuffle([
+ ['¿Cuántas PQRS recibimos en octubre?',0,'Resume lo que pasó.'],['¿Cuál fue el promedio de asistencia del grupo?',0,'Describe un hecho.'],
+ ['¿Por qué se demoran más las solicitudes del área jurídica?',1,'Busca causas.'],['¿Qué jornada explica la caída de asistencia?',1,'Compara segmentos para entender.'],
+ ['¿Cuántos inscritos tendremos el próximo trimestre?',2,'Estima el futuro.'],['¿Qué grupos podrían tener deserción el próximo mes?',2,'Predice un riesgo.'],
+ ['¿A qué área conviene asignar el nuevo auxiliar?',3,'Recomienda una acción.'],['¿Qué acción tomar con los aprendices en riesgo?',3,'Propone qué hacer.']])});},
+matriz(box){const crit=[['Impacto en la asistencia',40],['Costo bajo',30],['Facilidad de aplicar',30]];const opts=[['Llamar a quienes faltan 2 veces seguidas',[4,4,5]],['Mensaje automático de recordatorio',[3,5,4]],['Tutoría presencial semanal',[5,2,2]]];
+ const draw=()=>{const tw=crit.reduce((a,c)=>a+c[1],0);const sc=opts.map(o=>o[1].reduce((a,v,i)=>a+v*crit[i][1],0)/tw);const best=sc.indexOf(Math.max(...sc));
+  box.innerHTML=`<p>Califica cada acción de 1 a 5 en cada criterio y ajusta cuánto pesa cada criterio. La matriz recomienda la mejor opción.</p>
+  <div class="row">${crit.map((c,i)=>`<label class="small" style="flex:1;min-width:150px">${c[0]}: <b>${c[1]}%</b><input type="range" min="0" max="100" step="5" value="${c[1]}" data-w="${i}" style="width:100%"></label>`).join('')}</div>
+  ${TB(['Acción',...crit.map(c=>c[0]),'Puntaje'],opts.map((o,i)=>[i==best?`<b>${o[0]}</b>`:o[0],...o[1].map((v,j)=>`<select data-mv="${i}:${j}" style="width:64px">${[1,2,3,4,5].map(x=>`<option ${x==v?'selected':''}>${x}</option>`).join('')}</select>`),`<b class="${i==best?'okc':''}">${sc[i].toFixed(2)}</b>`]))}
+  ${S('Recomendación',`<b>${opts[best][0]}</b>. Recuerda: la matriz ayuda a decidir, pero la decisión final considera el contexto y la persona.`,'target')}`;
+  box.querySelectorAll('[data-w]').forEach(x=>x.oninput=()=>{crit[+x.dataset.w][1]=+x.value;draw()});box.querySelectorAll('[data-mv]').forEach(x=>x.onchange=()=>{const[i,j]=x.dataset.mv.split(':');opts[i][1][j]=+x.value;draw()});};draw();},
+/* ---------- DÍA 4 ---------- */
+semaforo(box){CLS(box,{intro:'Clasifica cada uso de la IA: 🟢 adelante · 🟡 con cuidado (anonimizar o validar) · 🔴 no hacerlo.',opts:['🟢 Verde','🟡 Amarillo','🔴 Rojo'],items:shuffle([
+ ['Pedirle a la IA ideas para el título de una presentación.',0,'Bajo riesgo, sin datos sensibles.'],['Mejorar la redacción de un correo genérico a todo el equipo.',0,'Contenido sin información privada.'],
+ ['Resumir un contrato quitando nombres, NIT y valores.',1,'Anonimizado, pero un abogado debe validar.'],['Comparar hojas de vida usando solo los criterios del cargo.',1,'Útil, pero la decisión es humana y hay que evitar sesgos.'],
+ ['Pegar en una IA pública la base de datos con cédulas y teléfonos de aprendices.',2,'Expone datos personales.'],['Dejar que la IA decida sola a quién contratar.',2,'Las decisiones sobre personas requieren revisión humana.']])});},
+alucina(box){const D='Datos reales: la orden OC-0156 es por 12 equipos. Fue recibida y está pendiente de confirmación del proveedor. No hay fecha de entrega. El próximo seguimiento interno es el viernes.';
+ const F=[['Asunto: Estado de su orden OC-0156',0],['Cordial saludo.',0],['Le confirmamos que su orden de 12 equipos fue recibida.',0],['Los equipos serán entregados el martes 10 de noviembre.',1],['Actualmente esperamos la confirmación del proveedor.',0],['Además, por la demora le aplicaremos un descuento del 15 %.',1],['El viernes haremos seguimiento interno y le informaremos novedades.',0],['Su pedido ya salió de nuestra bodega en Medellín.',1]];
+ let mk={},chk=false;const draw=()=>{const ok=F.filter((f,i)=>!!mk[i]==!!f[1]).length;
+  box.innerHTML=`<div class="ex">${D}</div><p class="mt">La IA redactó esta respuesta. <b>Haz clic en las frases que inventó</b> (no están en los datos).</p>
+  <div class="out" style="white-space:normal">${F.map((f,i)=>{let st='';if(chk){if(f[1]&&mk[i])st='background:color-mix(in srgb,var(--ok) 25%,transparent)';else if(f[1])st='background:color-mix(in srgb,var(--warn) 30%,transparent)';else if(mk[i])st='background:color-mix(in srgb,var(--bad) 22%,transparent)';}else if(mk[i])st='background:#FFE58F;color:#000';return `<span data-f="${i}" style="cursor:pointer;border-radius:4px;padding:1px 2px;${st}">${f[0]}</span>`}).join(' ')}</div>
+  <div class="row mt"><button class="btn" id="aC">Revisar</button><button class="btn ghost" id="aR">Reiniciar</button></div>
+  ${chk?`<p class="mt"><span class="score" style="font-size:26px">${ok}/${F.length}</span> frases bien evaluadas</p>${S('Eso es una alucinación','La IA escribió una fecha, un descuento y un despacho que <b>nadie confirmó</b>. Suenan creíbles, pero son falsos. Por eso cada afirmación se contrasta con los datos antes de enviar.','shield')}<p class="small">Verde = encontraste el invento · Naranja = invento que se te pasó · Rojo = marcaste algo que sí era cierto.</p>`:''}`;
+  box.querySelectorAll('[data-f]').forEach(s=>s.onclick=()=>{if(chk)return;mk[s.dataset.f]=!mk[s.dataset.f];draw()});box.querySelector('#aC').onclick=()=>{chk=true;draw()};box.querySelector('#aR').onclick=()=>{mk={};chk=false;draw()};};draw();},
+trd(box){CLS(box,{intro:'Tabla didáctica: <b>Compras → Órdenes de compra</b> · <b>Talento humano → Solicitudes de vacaciones</b> · <b>Órganos de dirección → Actas de comité</b>. Clasifica cada documento; si no hay información suficiente, déjalo pendiente.',opts:['Compras / Órdenes de compra','Talento humano / Vacaciones','Dirección / Actas de comité','Pendiente: falta información'],items:[
+ ['D01 · Orden de compra de 12 equipos.',0,''],['D02 · Solicitud de vacaciones de una persona trabajadora.',1,''],['D03 · Acta de la reunión del comité de dirección.',2,''],['D04 · Correo con asunto “Solicitud”, sin texto ni adjunto.',3,'No se puede clasificar sin ver el contenido: la IA tampoco debería adivinar.'],['D05 · Correo: “Solicito vacaciones del 1 al 5 de noviembre”.',1,'Con el contenido ya es claro.']]});},
+cicle(box){const parts=[['Contexto','Soy asistente administrativo en una empresa de logística.'],['Instrucciones','Redacta un correo para informar a los clientes un retraso en la entrega.'],['Condiciones','Tono formal, máximo 150 palabras, con disculpas y nueva fecha estimada.'],['Límites','No culpes a terceros ni des excusas técnicas.'],['Salida','Correo con asunto, saludo, cuerpo y despedida.']];
+ const sh=shuffle(parts.map((p,i)=>i));CLS(box,{intro:'Cada frase es una pieza del método <b>CICLE</b>. ¿A qué parte corresponde?',opts:parts.map(p=>p[0]),items:sh.map(i=>['“'+parts[i][1]+'”',i,''])});}
+};
+function simView(k){const L=SIMLIST[k],t=simTab[k],s=L[t];const grp=!!s[3];const gs=grp?[...new Set(L.map(x=>x[3]))]:[];const idx=L.map((x,i)=>i).filter(i=>!grp||L[i][3]==s[3]);
+ return `<h3>Simulaciones prácticas</h3><p class="small">Aprende haciendo. Todo funciona en tu navegador y usa datos ficticios.</p>${grp?`<p class="small" style="margin:10px 0 6px"><b>Elige la OVA:</b></p><div class="tabs">${gs.map(g=>`<button data-sim="${k}:${L.findIndex(x=>x[3]==g)}" class="${g==s[3]?'on':''}">${g}</button>`).join('')}</div><p class="small" style="margin:0 0 6px"><b>Simulaciones de “${s[3]}”:</b></p>`:''}<div class="tabs">${idx.map(i=>`<button data-sim="${k}:${i}" class="${i==t?'on':''}" ${grp?'style="background:var(--panel2)"':''}>${L[i][0]}</button>`).join('')}</div><div class="card" style="box-shadow:none;background:var(--panel2)"><span class="chip g">Simulación ${idx.indexOf(t)+1} de ${idx.length}${grp?' · '+s[3]:''}</span><h3 class="mt">${s[0]}</h3><p class="small" style="margin-top:-4px">${s[1]}</p><div id="simBox" data-k="${s[2]}"></div></div>`;}
+
+/* ===== Réplicas de las OVA del Día 1 ===== */
+let SIMT=[];const clearT=()=>{SIMT.forEach(t=>{clearInterval(t);clearTimeout(t)});SIMT=[]};
+SIMLIST.dia1=[
+ ['¿En qué escalón está?','Digitización, digitalización, transformación digital o IA.','escalon','Del dato a la IA'],
+ ['Sube la pirámide','Tienda Andina: de 1.000 registros a una decisión.','piramide','Del dato a la IA'],
+ ['Clasificador DIKW','Clasifica ocho enunciados.','dikw','Del dato a la IA'],
+ ['¿Qué pasa si los datos fallan?','Laboratorio: daña los datos y mira la decisión.','fallan','Del dato a la IA'],
+ ['CONPES 4144','Los seis ejes de la política de IA de Colombia.','conpes','Del dato a la IA'],
+ ['Volumen','¿Dónde caben los datos de cada negocio?','volumen','Big Data y las 5V'],
+ ['Velocidad','Por lotes o en tiempo real: detecta el fraude.','velocidad','Big Data y las 5V'],
+ ['Variedad','Estructurados, semiestructurados o no estructurados.','variedad','Big Data y las 5V'],
+ ['Veracidad','Limpia la tabla antes de analizar.','limpieza','Big Data y las 5V'],
+ ['Valor','¿Qué pregunta de negocio genera valor?','valor','Big Data y las 5V'],
+ ['Varios computadores a la vez','Divide el trabajo en 1, 2 o 4 nodos.','nodos','Big Data y las 5V'],
+ ['¿Es IA o no?','Programa tradicional frente a IA.','esia','Tipos de IA'],
+ ['Entrena un filtro de spam','IA débil: experta en una sola cosa.','spam','Tipos de IA'],
+ ['Teclado predictivo','La IA que llevas en el bolsillo.','teclado','Tipos de IA'],
+ ['La habitación china','¿Puede una máquina comprender?','chino','Tipos de IA'],
+ ['Mira a un modelo aprender','Precio de arriendo en Bogotá.','arriendo','Machine Learning'],
+ ['Clasificador KNN','¿El aprendiz certifica o está en riesgo?','knn','Machine Learning'],
+ ['K-means','Segmenta clientes de una tienda en línea.','kmeans','Machine Learning'],
+ ['Q-learning','El robot de bodega busca la zona de despacho.','qlearn','Machine Learning'],
+ ['Clasifica el escenario','Supervisado, no supervisado o refuerzo.','mltipo','Machine Learning'],
+ ['Ordena el ciclo de vida','Los pasos de un proyecto de ML.','ciclo','Machine Learning'],
+ ['Tokenizador','Así “lee” un modelo tu texto.','tokens','IA generativa'],
+ ['Siguiente palabra y temperatura','Así “escribe” la IA generativa.','token','IA generativa'],
+ ['Mecanismo de atención','El contexto cambia el significado.','atencion','IA generativa'],
+ ['Modelo de difusión','De ruido a imagen.','difusion','IA generativa']];
+const SV=(w,h,inner,extra='')=>`<div class="info mt"><svg class="inf" viewBox="0 0 ${w} ${h}" ${extra}>${inner}</svg></div>`;
+Object.assign(SIM,{
+escalon(box){CLS(box,{intro:'<b>Digitización:</b> pasar algo físico a digital. <b>Digitalización:</b> usar lo digital en un proceso. <b>Transformación digital:</b> cambiar la forma de servir. <b>IA:</b> el sistema aprende y decide. ¿En qué escalón está cada caso?',opts:['Digitización','Digitalización','Transformación digital','Inteligencia artificial'],items:shuffle([
+ ['Escanear las actas en papel y guardarlas en PDF.',0,'Solo cambia el formato.'],['Tomar una foto a una factura para archivarla.',0,'Pasa de papel a archivo digital.'],
+ ['Cambiar el formulario de inscripción en papel por uno web.',1,'Un proceso usa herramientas digitales.'],['Firmar electrónicamente dentro del flujo de aprobación.',1,'El proceso se vuelve digital.'],
+ ['Rediseñar la atención: el aprendiz hace todo en línea y recibe respuesta el mismo día.',2,'Cambia el servicio completo.'],['Crear certificados verificables con código QR para las empresas.',2,'Nuevo valor para las personas.'],
+ ['Un sistema predice qué aprendices pueden desertar y avisa al instructor.',3,'Aprende de datos y anticipa.'],['Un chatbot responde preguntas frecuentes en lenguaje natural.',3,'Entiende y responde solo.']])});},
+fallan(box){let er=0,mi=0,du=0;const draw=()=>{const real=320;const pred=Math.round(real*(1+du/100*0.9-mi/100*0.8+(er/100)*(er>20?0.6:-0.3)));const conf=Math.max(5,100-er*1.1-mi*0.9-du*0.7);const dev=Math.abs(pred-real)/real*100;
+ const lv=[['Datos',conf],['Información',conf*0.97],['Conocimiento',conf*0.92],['Decisión',conf*0.85]];
+ box.innerHTML=`<p>La Tienda Andina quiere saber cuántos paraguas pedir para el próximo mes de lluvias. La demanda real será de <b>${real}</b>. Daña los datos y mira qué le pasa a la decisión: <b>la IA sube la pirámide, pero hereda sus cimientos</b>.</p>
+ ${[['Registros con errores',er,'er'],['Datos faltantes',mi,'mi'],['Registros duplicados',du,'du']].map(x=>`<label class="f">${x[0]}: <b>${x[1]}%</b></label><input type="range" min="0" max="60" step="5" value="${x[1]}" data-fl="${x[2]}" style="width:100%">`).join('')}
+ <div class="grid g2 mt">${C(`<h4 style="margin-top:0">Confianza en cada nivel</h4><div class="bars">${lv.map(l=>`<div class="b"><span>${l[0]}</span><div><i style="width:${l[1]}%;background:${l[1]>75?'var(--ok)':l[1]>50?'var(--warn)':'var(--bad)'}"></i></div><b>${l[1].toFixed(0)}%</b></div>`).join('')}</div>`)}
+ ${C(`<h4 style="margin-top:0">Decisión del sistema</h4><p class="big">Pedir ${pred} paraguas</p><p class="small">Demanda real: ${real} · desviación ${dev.toFixed(0)}%</p><p>${dev<8?'<span class="okc">Buena decisión.</span>':pred>real?`<span class="badc">Sobran ${pred-real} paraguas:</span> dinero quieto en bodega.`:`<span class="badc">Faltan ${real-pred} paraguas:</span> clientes sin atender.`}</p>`)}</div>
+ <button class="btn ghost mt" id="fR">Datos limpios</button>`;
+ box.querySelectorAll('[data-fl]').forEach(x=>x.oninput=()=>{const v=+x.value;if(x.dataset.fl=='er')er=v;else if(x.dataset.fl=='mi')mi=v;else du=v;draw()});box.querySelector('#fR').onclick=()=>{er=mi=du=0;draw()};};draw();},
+conpes(box){const E=[['Ética y gobernanza','Uso responsable y confiable de la IA.','Reglas claras: quién responde por las decisiones de la IA.'],['Datos e infraestructura','Acceso a datos de calidad e infraestructura tecnológica.','Es la base de la pirámide: sin buenos datos no hay buena IA.'],['Investigación, desarrollo e innovación','Generar conocimiento con beneficio social y económico.','Proyectos que resuelven problemas reales del país.'],['Capacidades y talento digital','Competencias en IA en la educación y el sector productivo.','<b>Aquí entra el SENA:</b> formar a las personas que usarán y crearán IA.'],['Mitigación de riesgos','Prevenir la vulneración de derechos y la exclusión digital.','Que la IA no discrimine ni deje a nadie por fuera.'],['Uso y adopción','Llevar la IA a sectores estratégicos del país.','Salud, agro, educación, gobierno… usando IA de verdad.']];let s=3;
+ const draw=()=>{box.innerHTML=`<p>El <b>CONPES 4144</b> es la política nacional de inteligencia artificial de Colombia. Haz clic en cada eje.</p><div class="igrid">${E.map((e,i)=>`<div data-ej="${i}" style="cursor:pointer;${i==s?'border-color:var(--sena);box-shadow:0 0 0 2px var(--sena)':''}"><b>${i+1}</b><span>${e[0]}</span></div>`).join('')}</div>${C(`<span class="chip ${s==3?'g':'n'}">Eje ${s+1}</span><h3 class="mt">${E[s][0]}</h3><p>${E[s][1]}</p>${EX(E[s][2])}`,'mt')}`;
+  box.querySelectorAll('[data-ej]').forEach(x=>x.onclick=()=>{s=+x.dataset.ej;draw()});};draw();},
+volumen(box){const B=[['Tienda de barrio','200 ventas al día','≈ 40 KB al día','≈ 15 MB al año','Una memoria USB',8],['Sensores de una ciudad','5.000 sensores enviando un dato cada 10 segundos: 43 millones de registros al día','≈ 4 GB al día','≈ 1,5 TB al año','Un servidor',45],['Red social de fotos','2 millones de fotos al día de 3 MB','≈ 6 TB al día','≈ 2 PB al año','Miles de servidores: esto es Big Data',100]];let s=0;
+ const draw=()=>{const b=B[s];box.innerHTML=`<div class="tabs">${B.map((x,i)=>`<button data-vb="${i}" class="${i==s?'on':''}">${x[0]}</button>`).join('')}</div>${C(`<p>${b[1]}</p><div class="grid g3">${[['Por día',b[2]],['Por año',b[3]],['¿Dónde cabe?',b[4]]].map(x=>`<div><span class="small">${x[0]}</span><p class="big">${x[1]}</p></div>`).join('')}</div><div class="meter mt"><i style="width:${b[5]}%;background:${s==2?'var(--bad)':s==1?'var(--warn)':'var(--ok)'}"></i></div>`)}
+ ${S('Escala','1.000 KB = 1 MB · 1.000 MB = 1 GB · 1.000 GB = 1 TB · 1.000 TB = 1 PB. Cuando los datos ya no caben en un disco o un servidor, se reparten entre muchas máquinas.')}`;
+ box.querySelectorAll('[data-vb]').forEach(x=>x.onclick=()=>{s=+x.dataset.vb;draw()});};draw();},
+velocidad(box){const T=[['Pan y leche',18],['Gasolina',120],['Almuerzo',32],['⚠ Compra en el exterior',2400],['Farmacia',45],['⚠ Celular en línea',3800],['Mercado',210],['⚠ Joyería',5200],['Bus',3],['Cine',40]];let mode='rt',i=-1,lost=0,blocked=0,log=[];
+ const draw=()=>{box.innerHTML=`<p>Un banco recibe pagos con tarjeta. Tres son fraude (⚠). Elige cómo procesar los datos y pulsa <b>Iniciar</b>.</p>
+ <div class="tabs"><button data-vm="lote" class="${mode=='lote'?'on':''}">Por lotes (cada noche)</button><button data-vm="rt" class="${mode=='rt'?'on':''}">Tiempo real (streaming)</button></div>
+ <div class="out" style="min-height:140px">${log.join('\n')||'Esperando transacciones…'}</div>
+ <div class="row mt"><button class="btn" id="vI">${i<0||i>=T.length?'Iniciar':'Procesando…'}</button><span>Bloqueado: <b class="okc">$${blocked} mil</b> · Perdido: <b class="badc">$${lost} mil</b></span></div>
+ ${i>=T.length?S(mode=='rt'?'En tiempo real':'Por lotes',mode=='rt'?'El fraude se detectó en milisegundos y se bloqueó antes de perder dinero.':'El análisis llegó al día siguiente: cuando se detectó el fraude, el dinero ya había salido. Algunos datos pueden esperar; otros no.','clock'):''}`;
+ box.querySelectorAll('[data-vm]').forEach(x=>x.onclick=()=>{if(i>=0&&i<T.length)return;mode=x.dataset.vm;i=-1;lost=blocked=0;log=[];draw()});
+ box.querySelector('#vI').onclick=()=>{if(i>=0&&i<T.length)return;clearT();i=0;lost=blocked=0;log=[];draw();
+  const t=setInterval(()=>{const x=T[i],f=x[0].startsWith('⚠');if(mode=='rt'){if(f){blocked+=x[1];log.push(`🛑 ${x[0]} $${x[1]} mil → BLOQUEADA al instante`)}else log.push(`✓ ${x[0]} $${x[1]} mil`)}else{log.push(`… ${x[0]} $${x[1]} mil → guardada para revisar en la noche`);if(f)lost+=x[1]}
+   i++;if(i>=T.length){clearInterval(t);if(mode=='lote')log.push('🌙 Proceso nocturno: se detectaron 3 fraudes… pero ya era tarde.')}draw()},450);SIMT.push(t)};};draw();},
+variedad(box){CLS(box,{intro:'<b>Estructurado:</b> filas y columnas fijas. <b>Semiestructurado:</b> etiquetas o claves, esquema flexible. <b>No estructurado:</b> sin formato definido. Clasifica cada dato:',opts:['Estructurado','Semiestructurado','No estructurado'],items:shuffle([
+ ['Una tabla de Excel con ventas por día.',0,''],['Un CSV con la asistencia de un grupo.',0,''],['Un archivo JSON que entrega una aplicación.',1,'Usa claves y valores.'],['La factura electrónica en XML.',1,'Usa etiquetas.'],['El registro (log) de un servidor web.',1,'Tiene partes fijas y partes libres.'],['La foto de una factura de papel.',2,''],['El audio de una llamada a la línea de atención.',2,''],['Un correo escrito con texto libre.',2,'']])});},
+valor(box){const Q=[['¿Qué productos se compran juntos?','Tickets de compra de 2 años','Ubicar juntos el pan y la mantequilla y armar combos','+8 % en ventas por cliente'],['¿Cuándo se agotará el inventario?','Ventas diarias + entregas de proveedores','Pedir a tiempo, sin sobrantes','Menos productos agotados y menos dinero quieto'],['¿Qué clientes dejarán de comprar?','Frecuencia y valor de compra de cada cliente','Enviar una oferta antes de que se vayan','Retener clientes cuesta menos que conseguir nuevos'],['¿Cuántos datos tenemos guardados?','Todos los discos de la empresa','Ninguna','Solo un gasto: guardar sin analizar no genera valor']];let s=-1;
+ const draw=()=>{box.innerHTML=`<p>Guardar datos cuesta dinero. Solo generan <b>valor</b> cuando responden una pregunta y cambian una decisión. Elige una pregunta:</p><div class="grid g2">${Q.map((q,i)=>`<button class="btn ${i==s?'':'ghost'}" data-vq="${i}" style="justify-content:flex-start;text-align:left">${q[0]}</button>`).join('')}</div>
+ ${s>=0?C(TB(['Datos que necesita','Decisión que cambia','Valor'],[[Q[s][1],Q[s][2],`<b class="${s==3?'badc':'okc'}">${Q[s][3]}</b>`]]),'mt'):''}`;
+ box.querySelectorAll('[data-vq]').forEach(x=>x.onclick=()=>{s=+x.dataset.vq;draw()});};draw();},
+nodos(box){let n=1,ph=-1,prog=[];const P=['Dividir','Procesar','Combinar'];const total=120;
+ const draw=()=>{const tm=Math.round(total/n+(n>1?n*2:0));box.innerHTML=`<p>Hay que contar las palabras de <b>1.200.000 comentarios</b> de clientes. Un solo computador tarda ${total} minutos. Los sistemas de Big Data <b>dividen el trabajo</b> entre varios computadores (nodos).</p>
+ <div class="tabs">${[1,2,4].map(k=>`<button data-nn="${k}" class="${k==n?'on':''}">${k} nodo${k>1?'s':''}</button>`).join('')}</div>
+ <div class="flow">${P.map((p,i)=>`<div class="st" style="${i==ph?'border-color:var(--sena);box-shadow:0 0 0 2px var(--sena)':''}"><b>${i+1}</b><span>${p}</span></div>`).join('')}</div>
+ <div class="mt">${Array.from({length:n},(_,k)=>`<div class="bars"><div class="b"><span>Nodo ${k+1}</span><div><i style="width:${prog[k]||0}%"></i></div><b>${Math.round(1200000/n/1000)}k</b></div></div>`).join('')}</div>
+ <div class="row mt"><button class="btn" id="nI">Iniciar</button><span>Tiempo estimado: <b>${tm} min</b></span></div>
+ ${ph==3?S('Resultado',n==1?'Un solo computador hizo todo: 120 minutos.':`Con ${n} nodos el trabajo tomó unos ${tm} minutos. Dividir tiene un pequeño costo de coordinación, pero con muchos datos vale la pena.`,'check'):''}`;
+ box.querySelectorAll('[data-nn]').forEach(x=>x.onclick=()=>{clearT();n=+x.dataset.nn;ph=-1;prog=[];draw()});
+ box.querySelector('#nI').onclick=()=>{clearT();ph=0;prog=[];draw();let s=0;const t=setInterval(()=>{s++;if(s==2)ph=1;if(ph==1){for(let k=0;k<n;k++)prog[k]=Math.min(100,(prog[k]||0)+100*n/12)}if(ph==1&&prog[0]>=100)ph=2;else if(ph==2){ph=3;clearInterval(t)}draw()},300);SIMT.push(t)};};draw();},
+teclado(box){const corp='el aprendiz entregó la actividad a tiempo . el aprendiz entregó la evidencia del taller . el instructor revisó la actividad del aprendiz . la reunión del comité es el jueves . la reunión del equipo es mañana . el informe de asistencia está listo . el informe de gestión está en revisión . el aprendiz asistió a la reunión . el instructor envió el informe al comité . la actividad del taller está lista';
+ const W=corp.split(' ');const bg={};W.forEach((w,i)=>{if(i<W.length-1){bg[w]=bg[w]||{};bg[w][W[i+1]]=(bg[w][W[i+1]]||0)+1}});let txt='el';
+ const draw=()=>{const last=txt.trim().split(/\s+/).pop().toLowerCase();const sug=Object.entries(bg[last]||{}).filter(x=>x[0]!='.').sort((a,b)=>b[1]-a[1]).slice(0,3);const tot=sug.reduce((a,b)=>a+b[1],0);
+  box.innerHTML=`<p>El teclado de tu celular es una <b>IA débil</b>: aprendió qué palabra suele venir después de otra. Este aprendió de 10 frases de oficina. Toca las sugerencias.</p><div class="out" style="font-size:17px">${esc(txt)}<span style="color:var(--sena)">|</span></div>
+  <div class="row mt">${sug.length?sug.map(s=>`<button class="btn alt" data-tk="${s[0]}">${s[0]} <small style="opacity:.75">${Math.round(s[1]/tot*100)}%</small></button>`).join(''):'<span class="small">No conoce qué sigue después de “'+esc(last)+'”: nunca lo vio en sus ejemplos.</span>'}</div>
+  <div class="row mt"><button class="btn ghost" id="kB">Borrar última palabra</button><button class="btn ghost" id="kR">Empezar de nuevo</button></div>${S('¿Entiende lo que escribe?','No. Solo cuenta qué palabras suelen ir juntas. Por eso a veces sugiere cosas sin sentido.')}`;
+  box.querySelectorAll('[data-tk]').forEach(b=>b.onclick=()=>{txt+=' '+b.dataset.tk;draw()});box.querySelector('#kB').onclick=()=>{const p=txt.split(' ');if(p.length>1)p.pop();txt=p.join(' ');draw()};box.querySelector('#kR').onclick=()=>{txt='el';draw()};};draw();},
+chino(box){const R=[['你好吗？','我很好，谢谢。'],['你叫什么名字？','我叫小明。'],['今天天气好吗？','今天天气很好。']];let r=0,pick=null;
+ const draw=()=>{if(r>=R.length){box.innerHTML=`${S('¿Entendiste algo?','Respondiste bien todos los papeles… sin saber chino. Solo seguiste reglas. Eso hace un computador: <b>manipula símbolos sin comprenderlos</b>. Es el argumento de John Searle (1980) para decir que una IA débil no “entiende”, aunque lo parezca. La IA fuerte, que sí comprendería, aún no existe.','brain')}<p class="small">Las preguntas eran: “¿Cómo estás?”, “¿Cómo te llamas?” y “¿Hace buen tiempo hoy?”.</p><button class="btn ghost" id="hR">Repetir</button>`;box.querySelector('#hR').onclick=()=>{r=0;pick=null;draw()};return}
+  const q=R[r];const op=shuffle(R.map(x=>x[1]));box.innerHTML=`<p>Estás encerrado en una habitación. Por una ranura te pasan papeles en chino. No sabes chino, pero tienes un <b>libro de reglas</b>.</p>
+  <div class="grid g2">${C(`<h4 style="margin-top:0">📄 Papel ${r+1} de ${R.length}</h4><p class="big" style="font-size:30px">${q[0]}</p><p class="small">Elige la respuesta que dice el libro:</p>${op.map(o=>`<label class="opt ${pick?(o==q[1]?'right':o==pick?'wrong':''):''}" data-hc="${o}">${o}</label>`).join('')}`)}
+  ${C(`<h4 style="margin-top:0">📘 Libro de reglas</h4>${TB(['Si recibes…','Responde…'],R.map(x=>[x[0],x[1]]))}`)}</div>${pick?`<button class="btn mt" id="hN">Siguiente papel →</button>`:''}`;
+  box.querySelectorAll('[data-hc]').forEach(x=>x.onclick=()=>{if(pick)return;pick=x.dataset.hc;draw()});const n=box.querySelector('#hN');if(n)n.onclick=()=>{r++;pick=null;draw()};};draw();},
+arriendo(box){const D=[[30,0.9],[40,1.1],[45,1.3],[55,1.5],[60,1.6],[70,1.9],[80,2.1],[95,2.5]];let w=0,b=0.5,ep=0;
+ const zx=x=>(x-59.4)/21,f=x=>w*zx(x)+b;const mse=()=>D.reduce((a,d)=>a+(f(d[0])-d[1])**2,0)/D.length;
+ const step=()=>{let gw=0,gb=0;D.forEach(d=>{const e=f(d[0])-d[1];gw+=e*zx(d[0]);gb+=e});w-=0.12*2*gw/D.length;b-=0.12*2*gb/D.length;ep++};
+ const draw=()=>{const X=x=>40+(x-20)/90*500,Y=y=>220-(y-0.5)/2.5*200;const p65=f(65);
+  box.innerHTML=`<p>Cada punto es un apartamento (m² vs. arriendo en millones). El modelo empieza con una línea al azar y en cada <b>época</b> la ajusta para equivocarse menos.</p>
+  ${SV(560,250,`${[1,1.5,2,2.5,3].map(y=>`<line x1="40" x2="540" y1="${Y(y)}" y2="${Y(y)}" stroke="currentColor" opacity=".1"/><text x="2" y="${Y(y)+4}" font-size="11" fill="currentColor" opacity=".6">$${y}M</text>`).join('')}${[30,50,70,90,110].map(x=>`<text x="${X(x)-10}" y="245" font-size="11" fill="currentColor" opacity=".6">${x}m²</text>`).join('')}
+  <line x1="${X(20)}" y1="${Y(f(20))}" x2="${X(110)}" y2="${Y(f(110))}" stroke="var(--sena)" stroke-width="3"/>${D.map(d=>`<line x1="${X(d[0])}" x2="${X(d[0])}" y1="${Y(d[1])}" y2="${Y(f(d[0]))}" stroke="var(--bad)" opacity=".5"/><circle cx="${X(d[0])}" cy="${Y(d[1])}" r="5" fill="var(--nv)"/>`).join('')}`)}
+  <div class="grid g3 mt">${[['Épocas',ep],['Error (MSE)',mse().toFixed(3)],['Predicción 65 m²','$'+p65.toFixed(2)+'M']].map(x=>C(`<span class="small">${x[0]}</span><p class="big">${x[1]}</p>`)).join('')}</div>
+  <div class="row mt"><button class="btn" id="a1">1 época</button><button class="btn alt" id="a30">+30 épocas</button><button class="btn ghost" id="aR">Reiniciar</button></div>
+  <p class="small">Las líneas rojas son los errores. Aprender = hacerlas cada vez más cortas.</p>`;
+  box.querySelector('#a1').onclick=()=>{step();draw()};box.querySelector('#a30').onclick=()=>{for(let k=0;k<30;k++)step();draw()};box.querySelector('#aR').onclick=()=>{w=0;b=0.5;ep=0;draw()};};draw();},
+knn(box){const P=[[95,4.5,1],[90,4.0,1],[85,4.2,1],[88,3.6,1],[80,3.9,1],[92,3.3,1],[75,4.4,1],[60,2.5,0],[55,3.0,0],[65,2.2,0],[50,2.8,0],[70,2.9,0],[58,3.6,0],[72,3.4,1],[45,3.9,0]];let nw=null,k=3;
+ const X=a=>40+(a-40)/60*480,Y=n=>220-(n-2)/3*200;
+ const draw=()=>{let near=[],pred=null;if(nw){near=P.map(p=>[Math.hypot((p[0]-nw[0])/60,(p[1]-nw[1])/3),p]).sort((a,b)=>a[0]-b[0]).slice(0,k);const v=near.filter(n=>n[1][2]).length;pred=v>k/2?1:0}
+  box.innerHTML=`<p>Cada punto es un aprendiz del pasado: <span class="okc">● certificó</span> o <span class="badc">● estuvo en riesgo</span>. <b>Haz clic en el gráfico</b> para ubicar un aprendiz nuevo. El modelo mira sus <b>${k} vecinos más cercanos</b> y vota.</p>
+  <div class="tabs">${[1,3,5].map(x=>`<button data-kk="${x}" class="${x==k?'on':''}">k = ${x}</button>`).join('')}</div>
+  ${SV(560,250,`<rect x="40" y="20" width="480" height="200" fill="transparent"/>${[2,3,4,5].map(n=>`<text x="4" y="${Y(n)+4}" font-size="11" fill="currentColor" opacity=".6">nota ${n}</text>`).join('')}${[40,60,80,100].map(a=>`<text x="${X(a)-12}" y="245" font-size="11" fill="currentColor" opacity=".6">${a}%</text>`).join('')}<text x="260" y="14" font-size="11" fill="currentColor" opacity=".6">asistencia →</text>
+  ${nw?near.map(n=>`<line x1="${X(nw[0])}" y1="${Y(nw[1])}" x2="${X(n[1][0])}" y2="${Y(n[1][1])}" stroke="currentColor" stroke-dasharray="4 3" opacity=".5"/>`).join(''):''}
+  ${P.map(p=>`<circle cx="${X(p[0])}" cy="${Y(p[1])}" r="7" fill="${p[2]?'var(--ok)':'var(--bad)'}"/>`).join('')}${nw?`<rect x="${X(nw[0])-8}" y="${Y(nw[1])-8}" width="16" height="16" rx="3" fill="${pred?'var(--ok)':'var(--bad)'}" stroke="var(--ink)" stroke-width="2"/>`:''}`,'id="kSvg" style="cursor:crosshair"')}
+  ${nw?S('Predicción',`Aprendiz con ${nw[0].toFixed(0)}% de asistencia y nota ${nw[1].toFixed(1)}: <b>${pred?'probablemente certifica':'en riesgo: conviene hacer seguimiento'}</b> (${near.filter(n=>n[1][2]).length} de ${k} vecinos certificaron).`,'target'):''}
+  <button class="btn ghost" id="kQ">Quitar punto nuevo</button>`;
+  const sv=box.querySelector('#kSvg');sv.onclick=e=>{const r=sv.getBoundingClientRect();const x=(e.clientX-r.left)/r.width*560,y=(e.clientY-r.top)/r.height*250;nw=[Math.max(40,Math.min(100,40+(x-40)/480*60)),Math.max(2,Math.min(5,2+(220-y)/200*3))];draw()};
+  box.querySelectorAll('[data-kk]').forEach(x=>x.onclick=()=>{k=+x.dataset.kk;draw()});box.querySelector('#kQ').onclick=()=>{nw=null;draw()};};draw();},
+kmeans(box){let seed=7;const rnd=()=>{seed=(seed*9301+49297)%233280;return seed/233280};const P=[];[[2,20],[6,80],[9,35]].forEach(c=>{for(let i=0;i<12;i++)P.push([c[0]+(rnd()-.5)*3.2,c[1]+(rnd()-.5)*28])});
+ const COL=['#39A900','#00476F','#C77700'];let cen=null,asg=P.map(()=>-1),it=0,conv=false;
+ const X=x=>40+x/11*480,Y=y=>220-y/110*200;
+ const init=()=>{cen=shuffle(P).slice(0,3).map(p=>[...p]);asg=P.map(()=>-1);it=0;conv=false};
+ const step=()=>{if(!cen)init();const na=P.map(p=>{let b=0,bd=1e9;cen.forEach((c,i)=>{const d=((p[0]-c[0])/11)**2+((p[1]-c[1])/110)**2;if(d<bd){bd=d;b=i}});return b});conv=na.every((a,i)=>a==asg[i]);asg=na;cen=cen.map((c,i)=>{const m=P.filter((p,j)=>asg[j]==i);return m.length?[m.reduce((a,p)=>a+p[0],0)/m.length,m.reduce((a,p)=>a+p[1],0)/m.length]:c});it++};
+ const draw=()=>{box.innerHTML=`<p>Una tienda en línea tiene 36 clientes, <b>sin etiquetas</b>. K-means busca 3 grupos parecidos: pone 3 centros, asigna cada cliente al más cercano y mueve los centros. Repite hasta que nada cambia.</p>
+  ${SV(560,250,`${P.map((p,i)=>`<circle cx="${X(p[0])}" cy="${Y(p[1])}" r="6" fill="${asg[i]<0?'#8A99A3':COL[asg[i]]}" opacity=".85"/>`).join('')}${cen?cen.map((c,i)=>`<path d="M${X(c[0])-9},${Y(c[1])}h18M${X(c[0])},${Y(c[1])-9}v18" stroke="${COL[i]}" stroke-width="5"/>`).join(''):''}<text x="250" y="245" font-size="11" fill="currentColor" opacity=".6">compras al mes →</text><text x="4" y="14" font-size="11" fill="currentColor" opacity=".6">gasto promedio (miles) ↑</text>`)}
+  <div class="row mt"><button class="btn ghost" id="mI">Inicializar</button><button class="btn" id="mP">Paso</button><button class="btn alt" id="mC">Hasta converger</button><span class="small">Iteraciones: <b>${it}</b> ${conv?'· <span class="okc">¡Convergió!</span>':''}</span></div>
+  ${conv?S('Segmentos encontrados','La tienda puede nombrarlos: <b>ocasionales</b> (compran poco), <b>frecuentes de bajo gasto</b> y <b>pocas compras de alto valor</b>, y darle a cada grupo una oferta distinta. Nadie le dijo al algoritmo cuáles eran.','users'):''}`;
+  box.querySelector('#mI').onclick=()=>{init();draw()};box.querySelector('#mP').onclick=()=>{step();draw()};box.querySelector('#mC').onclick=()=>{let g=0;do{step();g++}while(!conv&&g<30);draw()};};draw();},
+qlearn(box){const N=5,G=[4,0],S0=[0,4],OB=['1,1','2,1','3,3','1,3'];let Q={},eps=0,path=null;const A=[[0,-1],[1,0],[0,1],[-1,0]],AR=['↑','→','↓','←'];
+ const q=(s,a)=>Q[s+'|'+a]||0;const mv=(s,a)=>{const n=[s[0]+A[a][0],s[1]+A[a][1]];if(n[0]<0||n[1]<0||n[0]>=N||n[1]>=N||OB.includes(n+''))return [s,-1];if(n[0]==G[0]&&n[1]==G[1])return [n,10];return [n,-0.1]};
+ const best=s=>{let b=0;for(let a=1;a<4;a++)if(q(s,a)>q(s,b))b=a;return b};
+ const episode=()=>{let s=[...S0];for(let t=0;t<60;t++){const a=Math.random()<0.25?Math.floor(Math.random()*4):best(s);const [n,r]=mv(s,a);const m=Math.max(...[0,1,2,3].map(x=>q(n,x)));Q[s+'|'+a]=q(s,a)+0.5*(r+0.9*m-q(s,a));s=n;if(r==10)break}eps++};
+ const draw=()=>{const cs=90;let cells='';for(let y=0;y<N;y++)for(let x=0;x<N;x++){const k=x+','+y,ob=OB.includes(k),g=x==G[0]&&y==G[1],st=x==S0[0]&&y==S0[1];const v=Math.max(...[0,1,2,3].map(a=>q([x,y],a)));const al=Math.max(0,Math.min(1,v/10));
+  cells+=`<rect x="${x*cs}" y="${y*cs}" width="${cs-3}" height="${cs-3}" rx="8" fill="${ob?'#5B6B76':g?'#39A900':`rgba(57,169,0,${al*0.55})`}" stroke="currentColor" stroke-opacity=".15"/>`+(g?`<text x="${x*cs+12}" y="${y*cs+50}" font-size="15" fill="#fff" font-weight="700">Despacho</text>`:ob?`<text x="${x*cs+18}" y="${y*cs+50}" font-size="13" fill="#fff">Estante</text>`:eps?`<text x="${x*cs+36}" y="${y*cs+54}" font-size="24" fill="currentColor" opacity=".7">${AR[best([x,y])]}</text>`:'')+(st?`<text x="${x*cs+6}" y="${y*cs+18}" font-size="11" fill="currentColor">inicio</text>`:'')}
+  const rb=path?path[path.length-1]:S0;
+  box.innerHTML=`<p>El robot no conoce la bodega. Prueba caminos: llegar al <b>despacho</b> da +10 y cada paso cuesta −0,1. Con cada episodio aprende qué dirección conviene en cada casilla (las flechas). El verde más intenso indica mayor valor.</p>
+  ${SV(450,450,cells+`<text x="${rb[0]*cs+30}" y="${rb[1]*cs+60}" font-size="34">🤖</text>`,'style="max-width:360px"')}
+  <div class="row mt"><button class="btn" id="q1">1 episodio</button><button class="btn alt" id="q100">+100</button><button class="btn ghost" id="qV">Ver al robot</button><button class="btn ghost" id="qR">Reiniciar</button><span class="small">Episodios: <b>${eps}</b></span></div>`;
+  box.querySelector('#q1').onclick=()=>{episode();path=null;draw()};box.querySelector('#q100').onclick=()=>{for(let k=0;k<100;k++)episode();path=null;draw()};box.querySelector('#qR').onclick=()=>{clearT();Q={};eps=0;path=null;draw()};
+  box.querySelector('#qV').onclick=()=>{clearT();path=[[...S0]];let s=[...S0],c=0;const t=setInterval(()=>{const [n]=mv(s,best(s));s=n;path.push(s);c++;draw();if((s[0]==G[0]&&s[1]==G[1])||c>20)clearInterval(t)},350);SIMT.push(t)};};draw();},
+ciclo(box){const S=['Definir el problema','Recolectar los datos','Preparar y limpiar los datos','Entrenar el modelo','Evaluar qué tanto acierta','Poner en uso y monitorear'];CLS(box,{intro:'Ordena los pasos de un proyecto de Machine Learning: indica en qué posición va cada uno.',opts:S.map((s,i)=>(i+1)+'º'),items:shuffle(S.map((s,i)=>[s,i,'']))});},
+tokens(box){let t=box.dataset.v||'La transformación digital mejora los procesos del SENA.';
+ const tok=s=>{const out=[];(s.match(/[A-Za-zÁÉÍÓÚÑáéíóúñü]+|\d+|[^\sA-Za-zÁÉÍÓÚÑáéíóúñü\d]/g)||[]).forEach(w=>{if(w.length<=5)out.push(w);else{let i=0;while(i<w.length){const n=w.length-i<=6?w.length-i:4;out.push(w.slice(i,i+n));i+=n}}});return out};
+ const hash=s=>{let h=7;for(const c of s)h=(h*31+c.charCodeAt(0))%50000;return h};const CL=['#39A900','#00476F','#C77700','#007832','#7A4FB5','#C62828'];
+ const draw=()=>{const k=tok(t);box.innerHTML=`<p>Un modelo no lee palabras completas: corta el texto en pedazos llamados <b>tokens</b> y los convierte en números. Escribe algo:</p><textarea id="tkT" style="min-height:70px">${esc(t)}</textarea>
+  <div class="out mt" style="white-space:normal;line-height:2.1">${k.map((x,i)=>`<span style="background:${CL[i%6]};color:#fff;border-radius:5px;padding:2px 5px;margin:1px">${esc(x)}</span>`).join(' ')}</div>
+  <div class="out mt small" style="min-height:0">${k.map(x=>hash(x)).join(' · ')}</div>
+  <div class="grid g3 mt">${[['Palabras',(t.match(/\S+/g)||[]).length],['Tokens',k.length],['Caracteres',t.length]].map(x=>C(`<span class="small">${x[0]}</span><p class="big">${x[1]}</p>`)).join('')}</div>
+  <p class="small mt">Simulación aproximada. Los modelos reales usan miles de piezas aprendidas; las palabras largas o poco comunes se cortan en más tokens. Los límites y costos de las IA se miden en tokens.</p>`;
+  const ta=box.querySelector('#tkT');ta.oninput=()=>{t=ta.value;const p=ta.selectionStart;draw();const n=box.querySelector('#tkT');n.focus();n.setSelectionRange(p,p)};};draw();},
+atencion(box){const F={A:['Me','senté','en','el','banco','del','parque','a','descansar'],B:['Fui','al','banco','a','pedir','un','préstamo','de','vivienda']};const Wt={A:{senté:.85,parque:1,descansar:.7},B:{pedir:.6,préstamo:1,vivienda:.55,Fui:.25}};const M={A:'🪑 banco = asiento',B:'🏦 banco = entidad financiera'};let s='A';
+ const draw=()=>{box.innerHTML=`<p>La misma palabra puede significar cosas distintas. El mecanismo de <b>atención</b> hace que el modelo mire las otras palabras de la frase para decidir. Cambia de frase y observa a qué “presta atención” <b>banco</b>.</p>
+  <div class="tabs"><button data-fa="A" class="${s=='A'?'on':''}">Frase A</button><button data-fa="B" class="${s=='B'?'on':''}">Frase B</button></div>
+  <div class="out" style="font-size:19px;white-space:normal;line-height:2.2">${F[s].map(w=>w=='banco'?`<b style="border:2px solid var(--nv);border-radius:6px;padding:2px 6px">banco</b>`:`<span style="background:rgba(57,169,0,${(Wt[s][w]||0.05)*0.7});border-radius:6px;padding:2px 5px">${w}</span>`).join(' ')}</div>
+  <div class="bars mt">${Object.entries(Wt[s]).sort((a,b)=>b[1]-a[1]).map(x=>`<div class="b"><span>${x[0]}</span><div><i style="width:${x[1]*100}%"></i></div><b>${Math.round(x[1]*100)}</b></div>`).join('')}</div>
+  ${S('El modelo concluye',`<b>${M[s]}</b>. Por eso el contexto que le das en el prompt cambia la respuesta.`,'brain')}`;
+  box.querySelectorAll('[data-fa]').forEach(x=>x.onclick=()=>{s=x.dataset.fa;draw()});};draw();},
+difusion(box){const N=16;const SH={'un corazón':(x,y)=>{const X=(x-7.5)/6,Y=(7.5-y)/6+0.25;return (X*X+Y*Y-1)**3-X*X*Y**3<0},'una casa':(x,y)=>(y>=8&&y<=14&&x>=3&&x<=12)||(y<8&&y>=2&&Math.abs(x-7.5)<=(y-1.5)*1),'un árbol':(x,y)=>(y>=12&&y<=14&&x>=7&&x<=8)||(Math.hypot(x-7.5,y-6.5)<5.2)},COL={'un corazón':'#C62828','una casa':'#00476F','un árbol':'#39A900'};
+ let sh='un corazón',step=0,seed=1;const noise=()=>{let s=seed;return Array.from({length:N*N},()=>{s=(s*9301+49297)%233280;return s/233280})};let nz=noise();
+ const draw=()=>{const t=step/10;let px='';for(let y=0;y<N;y++)for(let x=0;x<N;x++){const tg=SH[sh](x,y)?1:0;const v=nz[y*N+x]*(1-t)+tg*t;px+=`<rect x="${x*20}" y="${y*20}" width="19" height="19" fill="${COL[sh]}" opacity="${(0.08+v*0.92).toFixed(2)}"/>`}
+  box.innerHTML=`<p>Los generadores de imágenes empiezan con <b>ruido</b> (puntos al azar) y en cada paso quitan un poco, guiados por tu prompt, hasta que aparece la imagen.</p>
+  <div class="tabs">${Object.keys(SH).map(k=>`<button data-ds="${k}" class="${k==sh?'on':''}">Prompt: “${k}”</button>`).join('')}</div>
+  ${SV(320,320,px,'style="max-width:300px"')}
+  <label class="f">Paso ${step} de 10 ${step==0?'· puro ruido':step==10?'· imagen final':''}</label><input type="range" min="0" max="10" value="${step}" id="dS" style="width:100%">
+  <div class="row mt"><button class="btn" id="dG">Generar</button><button class="btn ghost" id="dN">Nueva semilla</button></div>
+  <p class="small">Cada “semilla” es un ruido inicial distinto: por eso el mismo prompt da imágenes diferentes cada vez.</p>`;
+  box.querySelectorAll('[data-ds]').forEach(x=>x.onclick=()=>{clearT();sh=x.dataset.ds;step=0;draw()});box.querySelector('#dS').oninput=e=>{clearT();step=+e.target.value;draw()};
+  box.querySelector('#dN').onclick=()=>{clearT();seed=Math.floor(Math.random()*9999)+1;nz=noise();step=0;draw()};
+  box.querySelector('#dG').onclick=()=>{clearT();step=0;draw();const t=setInterval(()=>{step++;draw();if(step>=10)clearInterval(t)},260);SIMT.push(t)};};draw();}
+});
+
+/* ===== estado ===== */
+let current='home', subTab={dia1:0,dia2:0,dia3:0,dia4:0}, quizState={}, caseSel=0, idealV={};
+const load=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}};
+const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+let seen=load('ruta_seen',{});
+
+/* ===== vistas ===== */
+const R={};
+R.home=()=>`${H('Semana general · Administrativos SENA','Ruta de la Transformación Digital','Un recorrido práctico para fortalecer nuestras capacidades en tecnología, automatización y análisis de datos — explicado de forma sencilla.','rocket')}
+ <div class="grid g4 mt">${[['users','Para','administrativos del SENA'],['clock','4','días de formación'],['wand','30+','prompts listos para copiar'],['tool','37','simulaciones prácticas']].map(x=>C(`<div class="kpi"><div class="ic">${I(x[0])}</div><div><b>${x[1]}</b><span>${x[2]}</span></div></div>`)).join('')}</div>
+ <h2 class="sec mt2">Lo que vamos a explorar</h2><p class="lead">De la transformación digital a la toma de decisiones con datos: entender el cambio, mejorar la forma de trabajar y convertir los datos en información útil.</p>
+ <div class="grid g2">${['dia1','dia2','dia3','dia4'].map(k=>C(`<div class="day"><div class="d">${DAYS[k].tag.replace(' ','<br>')}</div><div><h3>${DAYS[k].title}</h3><p class="small" style="margin:0">${DAYS[k].lead}</p></div></div><button class="btn ghost mt" data-go="${k}">Entrar →</button>`)).join('')}</div>
+ ${S('Propósito','Aprender herramientas y conceptos para trabajar de forma más simple, inteligente y estratégica.','target')}
+ ${C(`<h4 style="margin-top:0">Cómo usar este recurso</h4>${UL(['Avanza por el menú; el punto verde marca lo que ya visitaste.','Cada día tiene pestañas con sus temas, simulaciones prácticas y un repaso al final.','Los botones “Copiar” te dejan llevar los prompts a tu asistente de IA.','Practica siempre con datos ficticios o anonimizados.'])}`)}`;
+
+function dayView(k){const d=DAYS[k],t=subTab[k],tabs=[...d.subs.map(s=>s[0]),'🧪 Simulaciones','¿Lo entendí?'];
+ const body=t<d.subs.length?d.subs[t][1]:t==d.subs.length?simView(k):quizView(k);
+ return `${H(d.tag,d.title,d.lead,d.icon)}<div class="tabs mt">${tabs.map((x,i)=>`<button data-sub="${k}:${i}" class="${i==t?'on':''}">${i<d.subs.length?(i+1)+'. ':''}${x}</button>`).join('')}</div>${C(body)}
+ <div class="next">${t>0?`<button class="btn ghost" data-sub="${k}:${t-1}">← Anterior</button>`:'<span></span>'}${t<tabs.length-1?`<button class="btn" data-sub="${k}:${t+1}">Siguiente: ${tabs[t+1]} →</button>`:nextDay(k)}</div>`;}
+function nextDay(k){const o=['dia1','dia2','dia3','dia4','taller'];const n=o[o.indexOf(k)+1];return `<button class="btn" data-go="${n}">Continuar →</button>`;}
+function quizView(k){const q=DAYS[k].quiz,st=quizState[k]||{};const ok=Object.values(st).filter(x=>x.ok).length;
+ return `<h3>Repaso rápido</h3><p class="small">Elige una respuesta. Verás de inmediato si acertaste.</p>${q.map((x,i)=>`<div class="mt"><b>${i+1}. ${x[0]}</b>${x[1].map((o,j)=>{let c='';if(st[i]){if(j==x[2])c='right';else if(j==st[i].c)c='wrong';}return `<label class="opt ${c}" data-q="${k}:${i}:${j}">${o}</label>`}).join('')}${st[i]?`<div class="fb ${st[i].ok?'okc':'badc'}">${st[i].ok?'¡Correcto!':'No exactamente.'} <span style="color:var(--ink);font-weight:400">${x[3]}</span></div>`:''}</div>`).join('')}
+ ${Object.keys(st).length==q.length?`<div class="mt2 row"><span class="score">${ok}/${q.length}</span><button class="btn ghost" data-qreset="${k}">Intentar de nuevo</button></div>`:''}`;}
+['dia1','dia2','dia3','dia4'].forEach(k=>R[k]=()=>dayView(k));
+
+R.taller=()=>{const c=CASES[caseSel];return `${H('Día 4 · Tarde','Taller: la IA en un proceso real','En equipos de 3 o 4 personas, construyan y prueben una solución con IA para una tarea concreta, usando el método IDEAL y revisión humana.','tool')}
+ <div class="grid g2 mt">${C(`<h4 style="margin-top:0">Antes de empezar</h4>${UL(['Repartan roles: coordinar, escribir el prompt, verificar y presentar.','Necesitan un asistente de IA y un documento compartido.','Usen solo los datos ficticios de los casos.','Elijan <b>un solo caso</b> y profundicen en él toda la tarde.'])}`)}
+ ${C(`<h4 style="margin-top:0">Contexto común</h4><p><b>TechSolutions S.A.S.</b>, empresa ficticia de tecnología con 50 empleados, quiere mejorar sus procesos internos.</p><p class="small">Al final cada equipo tendrá: ficha del reto, dos versiones del prompt, un resultado revisado, registro de pruebas y una propuesta de piloto.</p>`)}</div>
+ <h2 class="sec mt2">1. Elijan un caso</h2><div class="tabs">${CASES.map((x,i)=>`<button data-case="${i}" class="${i==caseSel?'on':''}">${x[0].split(':')[0]}</button>`).join('')}</div>
+ ${C(`<h3>${c[0]}</h3><div class="sub"><div><h4>Reto</h4><p>${c[1]}</p><h4>Datos del caso</h4><div class="out">${c[2]}</div></div><div><h4>Producto</h4><p>${c[3]}</p><h4>Prueba</h4>${EX(c[4])}</div></div>`)}
+ <h2 class="sec mt2">2. Trabajen por etapas</h2>${C([['13:30','Elegir','Repartan roles y escojan el caso.'],['13:45','Analizar','¿Cómo se hace hoy? ¿Quién usa el resultado? ¿Qué datos hay?'],['14:05','Construir','Escriban el prompt IDEAL, pruébenlo y guarden la versión 1.'],['14:50','Verificar','Otra persona compara cada afirmación con los datos. Busquen inventos y omisiones.'],['16:00','Mejorar','Corrijan el prompt, prueben la versión 2 y el cambio del caso.'],['16:40','Compartir','Problema, un error encontrado, la corrección y el resultado.'],['17:10','Cerrar','Propongan un piloto: tarea, responsable, datos, revisión y medida.']].map((x,i)=>`<div class="step"><div class="n">${i+1}</div><div><span class="tm">${x[0]}</span><h4 style="margin:2px 0">${x[1]}</h4><span>${x[2]}</span></div></div>`).join(''))}
+ <h2 class="sec mt2">3. Registren la evidencia</h2>${P('EQUIPO Y CASO:\nPROBLEMA Y FORMA ACTUAL DE TRABAJO:\nDESTINATARIO Y RESULTADO ESPERADO:\nDATOS DISPONIBLES Y DATOS FALTANTES:\nCRITERIO DE ÉXITO:\nPROMPT IDEAL — VERSIÓN 1:\nRESPUESTA OBTENIDA:\nHALLAZGOS: afirmación / evidencia / corrección\nPROMPT IDEAL — VERSIÓN 2:\nRESULTADO REVISADO:\nPRUEBA CON UN DATO NUEVO:\nQUÉ DEBE REVISAR UNA PERSONA:\nPILOTO PROPUESTO: tarea / responsable / indicador / fecha','Plantilla de evidencia').replace('<p>','<p style="white-space:pre-wrap">')}
+ <h2 class="sec mt2">4. Califiquen su solución</h2><p class="lead">Cada criterio de 0 a 2 (0 = no se ve · 1 = parcial · 2 = demostrado). Máximo 10.</p>
+ ${C(`<div id="rub">${['Reto claro: tarea, destinatario y criterio de éxito.','Prompt IDEAL con sus cinco partes.','Resultado sustentado: sin datos inventados y con el formato pedido.','Mejora probada: dos versiones y prueba con un dato nuevo.','Uso responsable: revisión humana y piloto con indicador.'].map((x,i)=>`<div class="row" style="justify-content:space-between;padding:8px 0;border-top:${i?'1px solid var(--line)':'0'}"><span style="flex:1;min-width:200px">${x}</span><select data-rub="${i}" style="width:90px"><option>0</option><option>1</option><option>2</option></select></div>`).join('')}</div><div class="row mt"><span class="score" id="rubT">0/10</span><span class="small" id="rubM"></span></div>`)}
+ ${S('Sin internet o sin IA','Construyan el prompt y simulen la respuesta por parejas. Otro equipo la revisa. Márquenlo como simulación.','clock')}`;};
+
+const IDF=[['i','I — Identificar','Rol de la IA','Ej.: asistente administrativo con experiencia en atención al cliente'],['d1','D — Definir','Contexto y destinatario','Ej.: un cliente pregunta por su orden; aún no hay fecha confirmada'],['d2','D — Definir','Tarea y objetivo','Ej.: redactar un correo de respuesta con el estado actual'],['e','E — Ejemplificar (opcional)','Modelo de referencia','Ej.: un correo anterior que sirva de guía'],['a','A — Adaptar','Tono, formato y extensión','Ej.: tono cordial, con asunto, máximo 150 palabras'],['l','L — Limitar','Límites y restricciones','Ej.: no inventes fechas; marca “por confirmar” lo que falte']];
+R.ideal=()=>`${H('Herramienta','Generador de prompts IDEAL','Llena los campos y obtén un prompt ordenado para copiar en el asistente de IA que prefieras. Nada se envía a internet.','wand')}
+ <div class="grid g2 mt">${C(IDF.map(f=>`<label class="f">${f[1]} · <span style="font-weight:400;color:var(--muted)">${f[2]}</span></label><textarea data-id="${f[0]}" placeholder="${f[3]}" style="min-height:60px">${esc(idealV[f[0]]||'')}</textarea>`).join('')+`<div class="row mt"><button class="btn ghost" id="idEx">Cargar ejemplo</button><button class="btn ghost" id="idClr">Limpiar</button></div>`)}
+ ${C(`<h4 style="margin-top:0">Tu prompt</h4><div class="meter"><i id="idM"></i></div><p class="small" id="idT"></p><div class="out" id="idOut"></div><div class="row mt"><button class="btn" id="idCp">Copiar prompt</button></div>${S('Antes de usarlo','Revisa la respuesta: ¿inventó algo? ¿cumple el formato y los límites? Guarda el prompt como evidencia.','check')}`)}</div>`;
+
+R.vocab=()=>`<h2 class="sec">Vocabulario</h2><p class="lead">Las palabras de la semana, explicadas en una línea.</p><input type="text" id="vs" placeholder="Buscar una palabra…"><div class="gl mt" id="vl">${vocList('')}</div>`;
+const vocList=q=>VOCAB.filter(x=>(x[0]+x[1]).toLowerCase().includes(q.toLowerCase())).map(x=>`<div><b>${x[0]}</b><p>${x[1]}</p></div>`).join('')||'<p class="small">Sin resultados.</p>';
+
+R.cierre=()=>`${H('Al finalizar','Aprender · Experimentar · Transformar','Cada tema es una oportunidad para mirar nuestro trabajo con nuevos ojos y encontrar formas más simples de hacer las cosas.','flag')}
+ <div class="grid g2 mt">${['Reconoceremos oportunidades de transformación en nuestro trabajo.','Identificaremos procesos que se pueden mejorar o automatizar.','Entenderemos el valor de los datos para decidir.','Tendremos una visión práctica para seguir aprendiendo.'].map(x=>C(`<div class="kpi"><div class="ic">${I('check')}</div><div><span style="font-size:15px;color:var(--ink)">${x}</span></div></div>`)).join('')}</div>
+ ${S('Idea guía','La transformación digital no consiste solo en usar más tecnología: consiste en <b>trabajar mejor, generar valor y facilitar el servicio a las personas</b>.','bulb')}
+ <h2 class="sec mt2">Para seguir aprendiendo</h2>
+ <div class="grid g3">${[['¿Qué es la Industria 4.0?','Carlos Pacheco','qué es la industria 4.0 Carlos Pacheco'],['Cómo escribir prompts perfectos','IA Educativa','cómo escribir prompts perfectos'],['La fórmula del prompt perfecto','Cyberclick','la fórmula del prompt perfecto Cyberclick'],['IA aplicada a la gestión documental','Apiux Tech','IA aplicada a la gestión documental Apiux'],['Cuando los documentos piensan: IA','DGTIC Generalitat Valenciana','Cuando los documentos piensan IA DGTIC'],['15 mejores herramientas de IA','Emprende Digital','15 mejores herramientas de IA Emprende Digital']].map(v=>`<a class="vid" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=${encodeURIComponent(v[2])}"><div class="th"><span class="lg">Video</span><div class="pl">${I('play')}</div></div><div class="bd"><b>${v[0]}</b><small>${v[1]} · YouTube</small></div></a>`).join('')}</div>
+ <h4 class="mt2">Referencias</h4>${UL(['Schwab, K. (2016). <i>La cuarta revolución industrial</i>. Debate.','OpenAI. (2024). Mejores prácticas de ingeniería de prompts.','Prompt Engineering Guide. (2024). PromptingGuide.ai.','Microsoft Learn. Descripción general de Microsoft 365 Copilot.','Abana. (2023). La inteligencia artificial aplicada a la gestión documental.'])}`;
+
+/* ===== motor ===== */
+function render(){
+ const s=SECTIONS.find(x=>x[0]==current);
+ document.getElementById('tTitle').innerHTML=`${s[2]}<small>Ruta de la Transformación Digital · SENA</small>`;
+ document.getElementById('nav').innerHTML=SECTIONS.map(([k,ic,l])=>`<button data-go="${k}" class="${k==current?'on':''} ${seen[k]?'seen':''}">${I(ic)} ${l}<span class="dot"></span></button>`).join('');
+ document.getElementById('content').innerHTML=`<section class="pane on">${R[current]()}</section>`;
+ const r=document.documentElement,dark=r.getAttribute('data-theme')==='dark'||(!r.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme: dark)').matches);
+ document.getElementById('themeBtn').innerHTML=dark?I('sun')+' Claro':I('moon')+' Oscuro';
+ const v=SECTIONS.filter(([k])=>seen[k]).length;document.getElementById('pbar').style.width=(v/SECTIONS.length*100)+'%';
+ document.getElementById('ptxt').textContent=Math.round(v/SECTIONS.length*100)+'% recorrido';bind();}
+const keep=f=>{const y=window.scrollY;f();render();window.scrollTo(0,y)};
+function copyTxt(t,b){const done=()=>{const o=b.textContent;b.textContent='¡Copiado!';setTimeout(()=>b.textContent=o,1400)};
+ if(navigator.clipboard)navigator.clipboard.writeText(t).then(done,()=>fallback());else fallback();
+ function fallback(){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(e){}a.remove();done()}}
+function bind(){
+ clearT();
+ document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
+ document.querySelectorAll('[data-sub]').forEach(b=>b.onclick=()=>{const[k,i]=b.dataset.sub.split(':');subTab[k]=+i;render();window.scrollTo(0,0)});
+ document.querySelectorAll('[data-sim]').forEach(b=>b.onclick=()=>keep(()=>{const[k,i]=b.dataset.sim.split(':');simTab[k]=+i}));
+ const sb=document.getElementById('simBox');if(sb)SIM[sb.dataset.k](sb);
+ document.querySelectorAll('[data-q]').forEach(o=>o.onclick=()=>{const[k,i,j]=o.dataset.q.split(':');const st=quizState[k]=quizState[k]||{};if(st[i])return;keep(()=>st[i]={c:+j,ok:+j==DAYS[k].quiz[i][2]})});
+ document.querySelectorAll('[data-qreset]').forEach(b=>b.onclick=()=>keep(()=>quizState[b.dataset.qreset]={}));
+ document.querySelectorAll('[data-toggle]').forEach(b=>b.onclick=()=>document.getElementById(b.dataset.toggle).classList.toggle('hide'));
+ document.querySelectorAll('[data-copy]').forEach(b=>b.onclick=()=>copyTxt(b.parentNode.querySelector('p').textContent,b));
+ document.querySelectorAll('[data-case]').forEach(b=>b.onclick=()=>keep(()=>caseSel=+b.dataset.case));
+ const rs=document.querySelectorAll('[data-rub]');if(rs.length){const f=()=>{const t=[...rs].reduce((a,s)=>a+ +s.value,0);document.getElementById('rubT').textContent=t+'/10';document.getElementById('rubM').textContent=t>=8?'¡Listo para proponer el piloto!':t>=5?'Van bien: refuercen los criterios en 0 o 1.':'Revisen el reto y la verificación antes de presentar.'};rs.forEach(s=>s.onchange=f);f();}
+ const vs=document.getElementById('vs');if(vs)vs.oninput=()=>document.getElementById('vl').innerHTML=vocList(vs.value);
+ const out=document.getElementById('idOut');if(out){
+  const gen=()=>{const v=idealV,parts=[];
+   if(v.i)parts.push(`Actúa como ${v.i}.`);if(v.d1)parts.push(`Contexto: ${v.d1}.`);if(v.d2)parts.push(`Tarea: ${v.d2}.`);if(v.e)parts.push(`Usa como referencia este ejemplo: ${v.e}.`);if(v.a)parts.push(`Formato: ${v.a}.`);if(v.l)parts.push(`Límites: ${v.l}.`);
+   if(parts.length)parts.push('Si falta información, indícalo en lugar de inventarla.');
+   out.textContent=parts.join('\n').replace(/\.\./g,'.')||'Completa los campos para ver tu prompt aquí.';
+   const req=['i','d1','d2','a','l'].filter(k=>(v[k]||'').trim()).length;const m=document.getElementById('idM');m.style.width=(req/5*100)+'%';m.style.background=req==5?'var(--ok)':req>=3?'var(--warn)':'var(--bad)';
+   document.getElementById('idT').textContent=`${req} de 5 partes obligatorias completas`+(req==5?' · ¡prompt completo!':'');};
+  document.querySelectorAll('[data-id]').forEach(t=>t.oninput=()=>{idealV[t.dataset.id]=t.value.trim();gen()});
+  document.getElementById('idCp').onclick=e=>copyTxt(out.textContent,e.target);
+  document.getElementById('idClr').onclick=()=>keep(()=>idealV={});
+  document.getElementById('idEx').onclick=()=>keep(()=>idealV={i:'asistente administrativo de una empresa de tecnología',d1:'un cliente pregunta por la orden OC-0156 de 12 equipos; está pendiente de confirmación del proveedor y no hay fecha de entrega',d2:'redactar un correo de respuesta que informe el estado actual y el siguiente paso',e:'',a:'tono cordial y profesional, con asunto, saludo y cierre, máximo 150 palabras',l:'no inventes ni prometas fechas; marca como “por confirmar” lo que no esté en los datos'});
+  gen();}
+}
+function go(k){current=k;seen[k]=true;save('ruta_seen',seen);render();window.scrollTo(0,0);}
+document.getElementById('themeBtn').onclick=()=>{const r=document.documentElement,dark=r.getAttribute('data-theme')==='dark'||(!r.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme: dark)').matches);r.setAttribute('data-theme',dark?'light':'dark');try{localStorage.setItem('ova_theme',dark?'light':'dark')}catch(e){}render();};
+try{const th=localStorage.getItem('ova_theme');if(th)document.documentElement.setAttribute('data-theme',th)}catch(e){}
+seen.home=true;const h=location.hash.slice(1);if(SECTIONS.some(([k])=>k==h)){current=h;seen[h]=true}
+render();
+
+</script>
+</body>
+</html>
